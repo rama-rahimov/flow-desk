@@ -17,21 +17,31 @@ export class AuthService {
               private readonly jwt: JwtService) {}
   async register(dataRegister: RegisterDto) {
     try {
-      const { firstName, lastName, email, password, companyName, employmentsCount, startWork, role_id, companyId } = dataRegister;
+      const { firstName, lastName, email, password, companyName, link, employmentsCount, startWork, role_id, companyId } = dataRegister;
+      console.log({dataRegister});
       const saltRounds = await bcrypt.genSalt(10);
-      const userData = {email, role_id};
-      const findUserData = role_id === 1 ? {...userData, companyId } : userData;
-      const findUser = await this.userDB.findOneBy(findUserData);
-      if (findUser?.id) {
-        throw  new Error('User already exists');
+      const findUserData = role_id === 1 ? {email, company:{id: companyId} } : { email };
+      const findUser = role_id === 2 ?
+          await this.userDB.findOneBy(findUserData) : await this.customerDB.findOneBy(findUserData);
+      console.log({role_id});
+      if(role_id === 1){
+
+        const findCompanyAdmin = await this.userDB.findOneBy(findUserData);
+        console.log({findCompanyAdmin, findUserData});
+        if(findCompanyAdmin?.id){
+          throw  new Error('User already exists!!!');
+        }
+      }else if (findUser?.id) {
+        throw  new Error('User already exists!');
       } else {
         const hash = await bcrypt.hash(password,saltRounds);
-        if(role_id === 2){
-          const findCompany = await this.companyDB.findOneBy({name: companyName});
-          if(findCompany?.id){
-            throw  new Error('This company name already exists!');
+        if(Number(role_id) === 2){
+          const findComLink = await this.companyDB.findOneBy({link});
+          const findComName = await this.companyDB.findOneBy({name: companyName});
+          if(findComName?.id || findComLink?.id){
+            throw  new Error('This company name or link already exists!');
           }else {
-            const createCompany = this.companyDB.create({name: companyName, employments_count: employmentsCount, start_work: startWork});
+            const createCompany = this.companyDB.create({name: companyName, employments_count: employmentsCount, start_work: startWork, link});
             const company = await this.companyDB.save(createCompany);
             const createUser =  this.userDB.create({firstName, lastName, email, password: hash, company:{ id: company.id }, role_id});
             const user = await this.userDB.save(createUser);
@@ -52,14 +62,16 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     try {
       const customer = await this.customerDB.findOneBy({ email: loginDto.email });
-      if (!customer?.id) {
+      const user = await this.userDB.findOneBy({ email: loginDto.email });
+      const result = customer?.id ? customer : user?.id ? user: {id:null}
+      if (!result?.id) {
         throw new Error("Email is wrong");
       }else {
-        const checkPassword = await bcrypt.compare(loginDto.password, customer.password);
+        const checkPassword = await bcrypt.compare(loginDto.password, result.password);
         if (!checkPassword) {
           throw new Error('Password is wrong');
         }else {
-          const payload = { sub: customer.id, email: customer.email };
+          const payload = { sub: result.id, email: result.email };
           return { success: true, data: await this.jwt.sign(payload) };
         }
       }

@@ -10,6 +10,11 @@ import {
 import { CustomerEntity } from '../../customers/entities/customer.entity.js';
 import { UserEntity } from '../../users/entities/user.entity.js';
 
+export enum CompanyStatus {
+  ACTIVE='ACTIVE',
+  DISABLED='DISABLED'
+}
+
 @Entity()
 export class CompanyEntity {
   @PrimaryGeneratedColumn()
@@ -26,6 +31,13 @@ export class CompanyEntity {
 
   @Column({ type: 'date' })
   start_work: string;
+
+  @Column({
+    type: 'enum',
+    enum: CompanyStatus,
+    default: CompanyStatus.DISABLED
+  })
+  status: string;
 
   @OneToMany(() => CustomerEntity, (customers) => customers.company)
   customers: Relation<CustomerEntity>[];

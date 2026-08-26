@@ -18,6 +18,9 @@ export class RegisterDto {
   companyName:string;
   @ValidateIf((obj)=> obj.role_id === 2)
   @IsNotEmpty()
+  link:string;
+  @ValidateIf((obj)=> obj.role_id === 2)
+  @IsNotEmpty()
   employmentsCount:number;
   @ValidateIf((obj)=> obj.role_id === 2)
   @IsNotEmpty()
