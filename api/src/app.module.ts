@@ -6,9 +6,11 @@ import { DealModule } from './deal/deal.module.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './database/config.js';
 import { ConfigModule } from '@nestjs/config';
+import {CompanyModule} from "./companies/company.module.js";
+import {PaymentsModule} from "./payments/payments.module.js";
 
 @Module({
-  imports: [UserModule, DealModule, ConfigModule.forRoot({isGlobal:true}), TypeOrmModule.forRoot(typeOrmConfig)],
+  imports: [UserModule, CompanyModule, PaymentsModule, DealModule, ConfigModule.forRoot({isGlobal:true}), TypeOrmModule.forRoot(typeOrmConfig)],
   controllers: [AppController],
   providers: [AppService],
 })
