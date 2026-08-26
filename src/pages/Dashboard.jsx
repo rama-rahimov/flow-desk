@@ -1,13 +1,32 @@
 import { useNavigate } from 'react-router-dom';
+import {payment} from "../api.js";
+import {useEffect, useState} from "react";
 
 export default function Dashboard() {
+  const [company, setCompany] = useState({});
+  const [url, setUrl] = useState('');
   const navigate = useNavigate();
-
   function handleLogout() {
     console.log('Logout');
     localStorage.removeItem('token');
     navigate('/login');
   }
+
+  async function handlePayment() {
+    console.log('Logout');
+    const result = await payment({ companyId: company.id, employeesCount: company.employments_count });
+    if(result.success) {
+      window.open(result.url, '_blank');
+    }else {
+      alert('Something went wrong!');
+    }
+  }
+
+  useEffect(() => {
+   const result = JSON.parse(localStorage.getItem('company'));
+   setCompany(result);
+    console.log({result});
+  },[])
 
   return (
     <div className="dashboard">
@@ -44,6 +63,12 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
+      <button
+          className="logout-button"
+          onClick={handlePayment}
+      >
+        Subscibe
+      </button>
     </div>
   );
 }
