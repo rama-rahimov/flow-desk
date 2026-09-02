@@ -17,27 +17,30 @@ export class DealEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({type: 'date'})
+  @Column({ type: 'date' })
   dead_line: number;
 
-  @Column({type: 'decimal'})
+  @Column({ type: 'decimal' })
   price: number;
 
-  @ManyToOne(() => Deal_statusEntity, (deal_status) => deal_status.deal_entities)
-  deal_status: Relation<Deal_statusEntity>
+  @ManyToOne(
+    () => Deal_statusEntity,
+    (deal_status) => deal_status.deal_entities,
+  )
+  deal_status: Relation<Deal_statusEntity>;
 
   @ManyToOne(() => CustomerEntity, (customer) => customer.deal_entities)
-  customer: Relation<CustomerEntity>
+  customer: Relation<CustomerEntity>;
 
   @ManyToOne(() => UserEntity, (manager) => manager.deal_entities)
-  manager: Relation<UserEntity>
+  manager: Relation<UserEntity>;
 
   @ManyToOne(() => ProductEntity, (product) => product.deal_entities)
   product: Relation<ProductEntity>;
 
-  @CreateDateColumn({type: 'timestamptz'})
+  @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;
 
-  @UpdateDateColumn({type: 'timestamptz'})
+  @UpdateDateColumn({ type: 'timestamptz' })
   updated_at: Date;
 }
