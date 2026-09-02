@@ -14,18 +14,18 @@ export class ProductEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({type: 'varchar', length: 250})
+  @Column({ type: 'varchar', length: 250 })
   name: string;
 
-  @Column({type: 'text'})
+  @Column({ type: 'text' })
   description: string;
 
   @OneToMany(() => DealEntity, (deal_entity) => deal_entity.product)
   deal_entities: Relation<DealEntity>[];
 
-  @CreateDateColumn({type: 'timestamptz'})
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn({type: 'timestamptz'})
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }

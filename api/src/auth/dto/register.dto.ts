@@ -1,4 +1,4 @@
-import {IsEmail, IsNotEmpty, Length, ValidateIf} from "class-validator";
+import { IsEmail, IsNotEmpty, Length, ValidateIf } from 'class-validator';
 
 export class RegisterDto {
   @IsNotEmpty()
@@ -9,23 +9,23 @@ export class RegisterDto {
   @IsEmail()
   email: string;
   @IsNotEmpty()
-  @Length(5,20)
+  @Length(5, 20)
   password: string;
   @IsNotEmpty()
   role_id: number;
-  @ValidateIf((obj)=> obj.role_id === 2)
+  @ValidateIf((obj: { role_id: number }) => obj.role_id === 2)
   @IsNotEmpty()
-  companyName:string;
-  @ValidateIf((obj)=> obj.role_id === 2)
+  companyName: string;
+  @ValidateIf((obj: { role_id: number }) => obj.role_id === 2)
   @IsNotEmpty()
-  link:string;
-  @ValidateIf((obj)=> obj.role_id === 2)
+  link: string;
+  @ValidateIf((obj: { role_id: number }) => obj.role_id === 2)
   @IsNotEmpty()
-  employmentsCount:number;
-  @ValidateIf((obj)=> obj.role_id === 2)
+  employmentsCount: number;
+  @ValidateIf((obj: { role_id: number }) => obj.role_id === 2)
   @IsNotEmpty()
-  startWork:string;
-  @ValidateIf((obj)=> obj.role_id === 1)
+  startWork: string;
+  @ValidateIf((obj: { role_id: number }) => obj.role_id === 1)
   @IsNotEmpty()
-  companyId:number;
+  companyId: number;
 }

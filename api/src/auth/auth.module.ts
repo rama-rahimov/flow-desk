@@ -9,20 +9,25 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from '../users/entities/user.entity.js';
 import { RoleEntity } from '../users/entities/role.entity.js';
 import { AuthController } from './auth.controller.js';
-import {CompanyEntity} from "../companies/entities/company.entity.js";
-import {CustomerEntity} from "../customers/entities/customer.entity.js";
+import { CompanyEntity } from '../companies/entities/company.entity.js';
+import { CustomerEntity } from '../customers/entities/customer.entity.js';
 dotenv.config();
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity, RoleEntity, CompanyEntity, CustomerEntity]),
+    TypeOrmModule.forFeature([
+      UserEntity,
+      RoleEntity,
+      CompanyEntity,
+      CustomerEntity,
+    ]),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: {expiresIn: '7weeks'},
+      signOptions: { expiresIn: '7weeks' },
     }),
-    PassportModule
+    PassportModule,
   ],
   controllers: [AuthController],
-  providers:[AuthService, JwtStrategy, JwtAuthGuard],
+  providers: [AuthService, JwtStrategy, JwtAuthGuard],
   exports: [JwtAuthGuard],
 })
 export class AuthModule {}

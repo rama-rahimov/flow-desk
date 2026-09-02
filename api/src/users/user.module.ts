@@ -6,10 +6,9 @@ import { RoleEntity } from './entities/role.entity.js';
 import { UserController } from './user.controller.js';
 import { AuthModule } from '../auth/auth.module.js';
 
-
 @Module({
-imports: [TypeOrmModule.forFeature([UserEntity, RoleEntity]), AuthModule],
-controllers: [UserController],
-providers: [UsersService],
+  imports: [TypeOrmModule.forFeature([UserEntity, RoleEntity]), AuthModule],
+  controllers: [UserController],
+  providers: [UsersService],
 })
 export class UserModule {}

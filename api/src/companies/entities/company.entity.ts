@@ -11,8 +11,8 @@ import { CustomerEntity } from '../../customers/entities/customer.entity.js';
 import { UserEntity } from '../../users/entities/user.entity.js';
 
 export enum CompanyStatus {
-  ACTIVE='ACTIVE',
-  DISABLED='DISABLED'
+  ACTIVE = 'ACTIVE',
+  DISABLED = 'DISABLED',
 }
 
 @Entity()
@@ -35,7 +35,7 @@ export class CompanyEntity {
   @Column({
     type: 'enum',
     enum: CompanyStatus,
-    default: CompanyStatus.DISABLED
+    default: CompanyStatus.DISABLED,
   })
   status: string;
 
