@@ -4,14 +4,15 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {MediaEntity} from "./entityties/image.entity.js";
 import {Repository} from "typeorm";
 import {UserEntity} from "../users/entities/user.entity.js";
+import {ImageDto} from "./dto/image.dto.js";
 
 @Injectable()
 export class ImageService {
     constructor(private readonly cloudinaryService: CloudinaryService,
     @InjectRepository(MediaEntity) private readonly mediaDB: Repository<MediaEntity>,
                 @InjectRepository(UserEntity) private readonly userDB: Repository<UserEntity>) {}
-    async upload(file: Express.Multer.File, type: string, userId: number, public_id:string = ''): Promise<any> {
-        const uploadFile = await this.cloudinaryService.upload(file);
+    async upload(file: Express.Multer.File, type: string, userId: number, public_id:string = '') {
+        const uploadFile:ImageDto = await this.cloudinaryService.upload(file);
         const media = this.mediaDB.create({
             original_name: file.originalname,
             url: uploadFile.secure_url,
