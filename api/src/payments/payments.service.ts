@@ -47,14 +47,14 @@ export class PaymentsService {
         console.log('Event: ', event);
         const session = event.data.object;
         const companyId = Number(session.metadata?.companyId);
-        const employeesCount = session.metadata?.employeesCount;
-        const payment = await this.paymentDB.findOneBy({company_id:companyId});
+        // const employeesCount = session.metadata?.employeesCount;
+        // const payment = await this.paymentDB.findOneBy({company_id:companyId});
         if (companyId) {
           const findCompany = await this.companyDB.findOneBy({
             id: Number(companyId),
           });
           if (findCompany?.id) {
-            const update = await this.companyDB.update(
+             await this.companyDB.update(
               { id: Number(companyId) },
               { status: CompanyStatus.ACTIVE, },
             );
