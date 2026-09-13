@@ -8,11 +8,11 @@ export class editProductDto {
     @IsNotEmpty()
     @IsNumber()
     id: number;
-    @ValidateIf((obj) => obj.name !== undefined && obj.name !== '')
+    @ValidateIf((obj:{name:string}) => obj.name !== undefined && obj.name !== '')
     @Length(5, 50)
     name?: string;
 
-    @ValidateIf((obj) => obj.description !== undefined && obj.description !== '')
+    @ValidateIf((obj:{description:string}) => obj.description !== undefined && obj.description !== '')
     @Length(20, 500)
     description?: string;
     @IsOptional()

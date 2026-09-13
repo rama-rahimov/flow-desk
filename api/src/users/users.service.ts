@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import {EditProfileDto} from "./dto/edit.dto.js";
 import {AddDto} from "./dto/add.dto.js";
 import bcrypt from 'bcrypt';
+import {UserDTO} from "../auth/dto/user.dto.js";
 
 @Injectable()
 export class UsersService {
@@ -30,12 +31,12 @@ export class UsersService {
       }
   }
 
-  async add(data:AddDto, user){
-   if(user.role_id !== 1){
+  async add(data:AddDto, obj:UserDTO){
+   if(obj.user.role_id !== 1){
      throw new ForbiddenException('You do not have permission to add employees');
    }else {
-     const empCount = (await this.userBD.find({where:{company:{id: user.company.id}}}))?.length;
-     if(empCount >= user.company.employments_count){
+     const empCount = (await this.userBD.find({where:{company:{id: obj.user.company.id}}}))?.length;
+     if(empCount >= obj.user.company.employments_count){
        throw new ForbiddenException('You have reached the maximum number of employees allowed by your plan.');
      }else {
        const findUser = await this.userBD.findOneBy({ email: data.email });
@@ -50,7 +51,7 @@ export class UsersService {
            email: data.email,
            password: hash,
            role_id: 3,
-           company: {id:user.company.id},
+           company: {id:obj.user.company.id},
          })
          return this.userBD.save(newUser)
        }
@@ -58,15 +59,15 @@ export class UsersService {
    }
   }
 
-  async getEmployees(user){
-    return this.userBD.find({where:{company:{id:user.company.id}}});
+  async getEmployees(obj:UserDTO){
+    return this.userBD.find({where:{company:{id:obj.user.company.id}}});
   }
 
-  async deleteEmployee(user, id:number){
-    if(user.role_id !== 1){
+  async deleteEmployee(obj:UserDTO, id:number){
+    if(obj.user.role_id !== 1){
       throw new ForbiddenException('You do not have permission to delete employees');
     }else {
-      await this.userBD.delete({id, company:{id: user.company.id}});
+      await this.userBD.delete({id, company:{id: obj.user.company.id}});
       return {success: true, data: 'Employee deleted successfully!'};
     }
   }

@@ -7,17 +7,17 @@ import {editProductDto} from "./dto/editProductDto.js";
 export class ProductController {
     constructor(private readonly productService: ProductService ) {}
     @Post('add')
-    addProduct(@Body() product: productDto): Promise<boolean> {
+    addProduct(@Body() product: productDto) {
        return this.productService.addProduct(product);
     }
 
     @Put('edit')
-    editProduct(@Body() product: editProductDto): Promise<boolean> {
+    editProduct(@Body() product: editProductDto) {
         return this.productService.editProduct(product);
     }
 
     @Delete('delete/:id')
-    delProduct(@Param('id', ParseIntPipe) id: number): Promise<boolean> {
+    delProduct(@Param('id', ParseIntPipe) id: number) {
         return this.productService.deleteProduct(id);
     }
 
