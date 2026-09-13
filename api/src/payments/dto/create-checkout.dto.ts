@@ -1,8 +1,11 @@
-import { IsInt, Min } from 'class-validator';
+import {IsInt, IsString, Min} from 'class-validator';
 
 export class CreateCheckoutDto {
   @IsInt()
-  companyId: string;
+  companyId: number;
+
+  @IsInt()
+  price: number;
 
   @IsInt()
   @Min(1)

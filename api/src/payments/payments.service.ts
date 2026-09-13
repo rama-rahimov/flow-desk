@@ -9,6 +9,8 @@ import {
 } from '../companies/entities/company.entity.js';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import {CreateCheckoutDto} from "./dto/create-checkout.dto.js";
+import {PaymentEntity} from "./entityties/payment.entity.js";
 dotenv.config();
 
 @Injectable()
@@ -16,24 +18,18 @@ export class PaymentsService {
   private stripe: Stripe;
   constructor(
     private readonly stripeService: StripeService,
-    @InjectRepository(CompanyEntity)
-    private readonly companyDB: Repository<CompanyEntity>,
+    @InjectRepository(CompanyEntity) private readonly companyDB: Repository<CompanyEntity>,
+    @InjectRepository(PaymentEntity) private readonly paymentDB: Repository<PaymentEntity>
   ) {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   }
-  async createCheckout(companyId: string, employeesCount: number) {
-    const price = this.calculatePrice(employeesCount);
+  async createCheckout(data:CreateCheckoutDto) {
     const session = await this.stripeService.createCheckoutSession(
-      price,
-      companyId,
+      data
     );
     return { success: true, url: session.url };
   }
-  private calculatePrice(employeesCount: number): number {
-    return employeesCount * 10;
-  }
   async handleWebhook(rawBody: Buffer, signature: string) {
-    console.log('Taaaakkk');
     let event: Stripe.Event;
     try {
       event = this.stripe.webhooks.constructEvent(
@@ -48,20 +44,20 @@ export class PaymentsService {
     console.log('Verified Stripe event: ', event.type);
     switch (event.type) {
       case 'checkout.session.completed': {
+        console.log('Event: ', event);
         const session = event.data.object;
-        const companyId = session.metadata?.companyId;
-        console.log({ companyId });
+        const companyId = Number(session.metadata?.companyId);
+        const employeesCount = session.metadata?.employeesCount;
+        const payment = await this.paymentDB.findOneBy({company_id:companyId});
         if (companyId) {
           const findCompany = await this.companyDB.findOneBy({
             id: Number(companyId),
           });
-          console.log({ findCompany });
           if (findCompany?.id) {
             const update = await this.companyDB.update(
               { id: Number(companyId) },
-              { status: CompanyStatus.ACTIVE },
+              { status: CompanyStatus.ACTIVE, },
             );
-            console.log({ update });
           }
         }
         console.log('Checkout completed:', session.id);

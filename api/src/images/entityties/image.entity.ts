@@ -1,23 +1,24 @@
+import {ProductMediaEntity} from "../../product/entities/product_media.entity.js";
 import {
   Column,
   CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
+  Entity, OneToMany,
+  PrimaryGeneratedColumn, Relation,
 } from 'typeorm';
 
-@Entity()
-export class ImagesEntity {
+@Entity('media')
+export class MediaEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: 'varchar', length: 200 })
-  name: string;
+  original_name: string;
 
   @Column({ type: 'varchar', length: 300 })
   url: string;
 
-  @Column()
-  public_id: number;
+  @Column({ type: 'varchar', length: 300 })
+  public_id: string;
 
   @Column({ type: 'varchar', length: 200 })
   file_name: string;
@@ -25,8 +26,11 @@ export class ImagesEntity {
   @Column({ type: 'varchar', length: 200 })
   mime_type: string;
 
-  @Column({ type: 'varchar', length: 100 })
-  size: string;
+  @Column({ type: 'integer' })
+  size: number;
+
+  @OneToMany(() => ProductMediaEntity, (product_medias) => product_medias.product)
+  product_medias: Relation<ProductMediaEntity>[];
 
   @CreateDateColumn()
   created_at: Date;

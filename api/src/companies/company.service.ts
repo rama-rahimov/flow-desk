@@ -15,7 +15,6 @@ export class CompanyService {
         where: { link },
         select: { id: true, link: true, name: true, employments_count: true },
       });
-      console.log({ company });
       if (company?.id) {
         return { success: true, data: company };
       } else {

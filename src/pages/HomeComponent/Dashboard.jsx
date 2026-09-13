@@ -1,19 +1,22 @@
-import { useNavigate } from 'react-router-dom';
-import {payment} from "../api.js";
+import {useNavigate} from 'react-router-dom';
+import {currentUser, findProducts, payment} from "../../api.js";
 import {useEffect, useState} from "react";
 
 export default function Dashboard() {
   const [company, setCompany] = useState({});
-  const [url, setUrl] = useState('');
+  const [form, setForm] = useState({ productCount: 0, products: [] });
+  const [user, setUser] = useState({});
   const navigate = useNavigate();
   function handleLogout() {
-    console.log('Logout');
     localStorage.removeItem('token');
     navigate('/login');
   }
 
+  function handleProfile() {
+    navigate(`/${company.link}/profile`);
+  }
+
   async function handlePayment() {
-    console.log('Logout');
     const result = await payment({ companyId: company.id, employeesCount: company.employments_count });
     if(result.success) {
       window.open(result.url, '_blank');
@@ -25,13 +28,28 @@ export default function Dashboard() {
   useEffect(() => {
    const result = JSON.parse(localStorage.getItem('company'));
    setCompany(result);
-    console.log({result});
+    (async () => {
+      if(result?.id){
+        const products = await findProducts(result.id);
+        const user = await currentUser();
+        setUser(user);
+        setForm((prev) => ({...prev,
+          productCount: products.length, products }));
+      }
+    })()
   },[])
 
   return (
     <div className="dashboard">
       <header className="dashboard-header">
         <h1>FlowDesk</h1>
+
+        <button
+            className="logout-button"
+            onClick={handleProfile}
+        >
+          Profile
+        </button>
 
         <button
           className="logout-button"
@@ -51,10 +69,19 @@ export default function Dashboard() {
             <h3>Clients</h3>
             <p>0</p>
           </div>
-
-          <div className="dashboard-card">
+          {
+            user.role_id === 1 && <div className="dashboard-card" onClick={() => navigate(`/${company.link}/employees`,{
+                state: {company: company.link }
+              })}>
+                <h3>Employees</h3>
+                {/*<p>0</p>*/}
+              </div>
+          }
+          <div className="dashboard-card" onClick={() => navigate(`/${company.link}/products`, {
+            state: {products: form.products, companyId: company.id, companyName: company.link }
+          })}>
             <h3>Products</h3>
-            <p>0</p>
+            <p>{form.productCount}</p>
           </div>
 
           <div className="dashboard-card">
@@ -65,9 +92,11 @@ export default function Dashboard() {
       </main>
       <button
           className="logout-button"
-          onClick={handlePayment}
+          onClick={() => navigate(`/${company.link}/payment`,{
+            state: {company: company.link, companyId: company.id}
+          })}
       >
-        Subscibe
+        Subscribe
       </button>
     </div>
   );

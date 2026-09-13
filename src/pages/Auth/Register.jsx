@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import {payment, register} from '../api';
+import {payment, register} from '../../api.js';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -49,7 +49,6 @@ export default function Register() {
                             <button type="submit"> Register </button> </> : Number(form.role_id) === 2 ? <>
                             <input type="text" name="companyName" placeholder="Company name" value={form.companyName} onChange={handleChange} required />
                             <input type="text" name="link" placeholder="Company link" value={form.link} onChange={handleChange} required />
-                            <input type="text" inputMode="numeric" name="employmentsCount" placeholder="Employements count" value={form.employmentsCount} onChange={handleChange} required />
                             <label>Company start work date: </label>
                             <DatePicker
                                 name="startWork"

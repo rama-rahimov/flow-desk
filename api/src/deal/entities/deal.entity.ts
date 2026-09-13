@@ -12,7 +12,7 @@ import { ProductEntity } from '../../product/entities/product.entity.js';
 import { CustomerEntity } from '../../customers/entities/customer.entity.js';
 import { UserEntity } from '../../users/entities/user.entity.js';
 
-@Entity()
+@Entity('deal')
 export class DealEntity {
   @PrimaryGeneratedColumn()
   id: number;

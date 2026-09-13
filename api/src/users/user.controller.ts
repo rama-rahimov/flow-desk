@@ -1,37 +1,40 @@
-import {
-  // Body,
-  Controller,
-  // , Delete, Get, Post
-} from '@nestjs/common';
-// import { UsersService } from './users.service.js';
+import {Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards} from '@nestjs/common';
+import { UsersService } from './users.service.js';
+import {EditProfileDto} from "./dto/edit.dto.js";
+import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard.js";
+import {AddDto} from "./dto/add.dto.js";
 
-@Controller()
+@Controller('api/user')
 export class UserController {
-  constructor(
-    // private readonly usersService: UsersService
-  ) {}
-  // @Get('/api/findOneBy')
-  // findOneBy() {
-  //   return this.usersService.findOneBy();
-  // }
-  //
-  // @Get('/api/findBy')
-  // findBy() {
-  //   return this.usersService.findBy();
-  // }
-  //
-  // @Delete('/api/deleteUser')
-  // deleteUser() {
-  //   return this.usersService.deleteUser();
-  // }
-  //
-  // @Post('/api/addUser')
-  // addUser() {
-  //   return this.usersService.addUser();
-  // }
-  //
-  // @Post('/api/updateProfile')
-  // updateProfile() {
-  //   return this.usersService.updateProfile();
-  // }
+  constructor(private readonly usersService: UsersService) {}
+  @Patch('profile/edit')
+  @UseGuards(JwtAuthGuard)
+  editProfile(@Req() req, @Body() data: EditProfileDto) {
+    return this.usersService.editProfile(req.user.id, req.user.email, data)
+  }
+
+  @Get('profile/current')
+  @UseGuards(JwtAuthGuard)
+  getProfile(@Req() req) {
+    return req.user;
+  }
+
+  @Post('add')
+  @UseGuards(JwtAuthGuard)
+  add(@Body() data: AddDto, @Req() req) {
+    console.log({ data });
+    return this.usersService.add(data, req.user);
+  }
+
+  @Get('employees')
+  @UseGuards(JwtAuthGuard)
+  getEmployees(@Req() req) {
+    return this.usersService.getEmployees(req.user);
+  }
+
+  @Delete('employee/:id')
+  @UseGuards(JwtAuthGuard)
+  deleteEmployee(@Req() req, @Param('id') id: number) {
+    return this.usersService.deleteEmployee(req.user, id);
+  }
 }
