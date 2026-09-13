@@ -20,11 +20,9 @@ export class PaymentsController {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   }
   @Post('create-checkout')
-  createCheckout(@Body() dto: CreateCheckoutDto) {
-    return this.paymentService.createCheckout(
-      dto.companyId,
-      dto.employeesCount,
-    );
+  createCheckout(@Body() data: CreateCheckoutDto) {
+    console.log({data});
+    return this.paymentService.createCheckout(data);
   }
 
   @Post('webhook')
@@ -33,7 +31,7 @@ export class PaymentsController {
     @Req() req: RawBodyRequest<Request>,
     @Headers('stripe-signature') signature: string,
   ) {
-    console.log('Offffff Daavvaaaayyy )))');
+    console.log({rawBody: req.rawBody, signature});
     return this.paymentService.handleWebhook(req.rawBody!, signature);
   }
 }

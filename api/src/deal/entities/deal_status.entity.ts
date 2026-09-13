@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { DealEntity } from './deal.entity.js';
 
-@Entity()
+@Entity('deal_status')
 export class Deal_statusEntity {
   @PrimaryGeneratedColumn()
   id: number;

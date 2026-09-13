@@ -9,13 +9,14 @@ import {
 } from 'typeorm';
 import { CustomerEntity } from '../../customers/entities/customer.entity.js';
 import { UserEntity } from '../../users/entities/user.entity.js';
+import {ProductEntity} from "../../product/entities/product.entity.js";
 
 export enum CompanyStatus {
   ACTIVE = 'ACTIVE',
   DISABLED = 'DISABLED',
 }
 
-@Entity()
+@Entity('company')
 export class CompanyEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -26,7 +27,7 @@ export class CompanyEntity {
   @Column({ type: 'varchar', length: 200, unique: true })
   link: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', default: 1 })
   employments_count: number;
 
   @Column({ type: 'date' })
@@ -44,6 +45,9 @@ export class CompanyEntity {
 
   @OneToMany(() => UserEntity, (user) => user.company)
   user: Relation<UserEntity>[];
+
+  @OneToMany(() => ProductEntity, (products) => products.company)
+  products: Relation<ProductEntity>[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   create_at: string;

@@ -6,15 +6,14 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToOne,
-  JoinColumn,
-  OneToOne,
   Relation,
+    JoinColumn, OneToOne
 } from 'typeorm';
 import { DealEntity } from '../../deal/entities/deal.entity.js';
 import { CompanyEntity } from '../../companies/entities/company.entity.js';
-import { ImagesEntity } from '../../images/entityties/image.entity.js';
+import {MediaEntity} from "../../images/entityties/image.entity.js";
 
-@Entity()
+@Entity('users')
 export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -40,9 +39,12 @@ export class UserEntity {
   @OneToMany(() => DealEntity, (deal_entity) => deal_entity.manager)
   deal_entities: Relation<DealEntity>[];
 
-  @OneToOne(() => ImagesEntity)
-  @JoinColumn()
-  image: Relation<ImagesEntity>;
+  @OneToOne(() => MediaEntity, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'avatar_media_id' })
+  avatar: MediaEntity;
 
   @CreateDateColumn({ type: 'timestamptz' })
   create_at: Date;

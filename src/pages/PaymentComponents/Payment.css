@@ -1,0 +1,203 @@
+.pricing-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.pricing-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.pricing-header h1 {
+    font-size: 2.5rem;
+    color: #111827;
+    margin-bottom: 12px;
+}
+
+.pricing-header p {
+    font-size: 1.1rem;
+    color: #4b5563;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    align-items: stretch;
+}
+
+@media (min-width: 768px) {
+    .pricing-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.pricing-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 32px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.pricing-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.pricing-card.popular {
+    border: 2px solid #2563eb;
+    transform: scale(1.03);
+}
+
+.pricing-card.popular:hover {
+    transform: scale(1.03) translateY(-4px);
+}
+
+.badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2563eb;
+    color: white;
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    text-transform: uppercase;
+}
+
+.plan-name {
+    font-size: 1.5rem;
+    color: #1f2937;
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+.plan-price {
+    margin-bottom: 24px;
+}
+
+.plan-price .amount {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.plan-price .period {
+    color: #6b7280;
+    font-size: 1rem;
+}
+
+.features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px 0;
+    flex-grow: 1; /* Pushes the button to the bottom so cards look uniform */
+}
+
+.features-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #4b5563;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.check-icon {
+    color: #10b981;
+    font-weight: bold;
+}
+
+.subscribe-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.15s;
+}
+
+.subscribe-btn:disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    background: #f3f4f6;
+    color: #1f2937;
+    border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+
+.employees-count-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+
+    padding: 20px;
+    margin-top: 20px;
+
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fafafa;
+}
+
+.employees-count-container p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.employees-count-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-secondary {
+    padding: 10px 18px;
+
+    border: 1px solid #ccc;
+    border-radius: 6px;
+
+    background-color: white;
+    color: #333;
+
+    font-size: 14px;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #f0f0f0;
+}
+
+.btn-secondary:active {
+    transform: scale(0.97);
+}
