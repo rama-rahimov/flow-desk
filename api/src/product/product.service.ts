@@ -19,7 +19,7 @@ export class ProductService {
        const {id, ...pr} = product;
        let obj = {};
        for (const idKey in pr) {
-         if (pr.hasOwnProperty(idKey) && pr[idKey] !== undefined && !!pr[idKey]) {
+         if (Object.prototype.hasOwnProperty.call(pr, idKey) && pr[idKey] !== undefined && !!pr[idKey]) {
            obj[idKey] = pr[idKey];
           }
          }
