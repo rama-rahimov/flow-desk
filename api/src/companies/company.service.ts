@@ -10,7 +10,6 @@ export class CompanyService {
     private readonly companyDB: Repository<CompanyEntity>,
   ) {}
   async checkCompany(link: string) {
-    try {
       const company = await this.companyDB.findOne({
         where: { link },
         select: { id: true, link: true, name: true, employments_count: true },
@@ -20,8 +19,5 @@ export class CompanyService {
       } else {
         return { success: false, message: 'No such company' };
       }
-    } catch (error) {
-      return { success: false, error: (error as Error).message };
-    }
   }
 }
