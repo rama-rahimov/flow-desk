@@ -8,16 +8,16 @@ const __dirname = dirname(__filename);
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'postgres',
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  username: process.env.DB_USERNAME,
-  password: String(process.env.DB_PASSWORD),
-  database: process.env.DB_DATABASE,
-  // url: process.env.DATABASE_URL,
-  // ssl: {
-  //   rejectUnauthorized: false,
-  // },
-  // autoLoadEntities: true,
+  // host: process.env.DB_HOST,
+  // port: Number(process.env.DB_PORT),
+  // username: process.env.DB_USERNAME,
+  // password: String(process.env.DB_PASSWORD),
+  // database: process.env.DB_DATABASE,
+  url: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+  autoLoadEntities: true,
   synchronize: false,
   entities: [join(__dirname, '../**/*.entity.{ts,js}')],
   migrations: [join(__dirname, 'migrations/*.{ts,js}')],

@@ -33,7 +33,8 @@ export class CloudinaryService {
         })
     }
 
-    // async delete(publicId: string) {
-    //     return cloudinary.uploader.destroy(publicId)
-    // }
+    async delete(publicId: string): Promise<boolean> {
+        await cloudinary.uploader.destroy(publicId);
+        return true;
+    }
 }

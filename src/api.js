@@ -2,7 +2,7 @@ const API_URL = 'http://localhost:3000';
 const test_prod_url = 'https://flow-desk-6trh.onrender.com';
 
 export async function register(userData) {
-    const response = await fetch(`${API_URL}/api/register`, {
+    const response = await fetch(`${test_prod_url}/api/register`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -14,7 +14,7 @@ export async function register(userData) {
 }
 
 export async function login_employment(userData) {
-    const response = await fetch(`${API_URL}/api/login_employment`, {
+    const response = await fetch(`${test_prod_url}/api/login_employment`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -31,7 +31,7 @@ export async function login_employment(userData) {
 }
 
 export async function login(userData) {
-    const response = await fetch(`${API_URL}/api/login`, {
+    const response = await fetch(`${test_prod_url}/api/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ export async function login(userData) {
 }
 
 export async function payment(data) {
-    const response = await fetch(`${API_URL}/api/payments/create-checkout`, {
+    const response = await fetch(`${test_prod_url}/api/payments/create-checkout`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export async function payment(data) {
 }
 
 export async function checkCompany(link) {
-    const response = await fetch(`${API_URL}/api/company/${link}`, {
+    const response = await fetch(`${test_prod_url}/api/company/${link}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export async function checkCompany(link) {
 }
 
 export async function findProducts(id) {
-    const response = await fetch(`${API_URL}/api/product/all/${id}`, {
+    const response = await fetch(`${test_prod_url}/api/product/all/${id}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ export async function findProducts(id) {
     return response.json();
 }
 export async function addProduct(data) {
-    const response = await fetch(`${API_URL}/api/product/add`, {
+    const response = await fetch(`${test_prod_url}/api/product/add`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ export async function addProduct(data) {
 }
 
 export async function editProduct(data) {
-    const response = await fetch(`${API_URL}/api/product/edit`, {
+    const response = await fetch(`${test_prod_url}/api/product/edit`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ export async function editProduct(data) {
 }
 
 export async function deleteProduct(id) {
-    const response = await fetch(`${API_URL}/api/product/delete/${id}`, {
+    const response = await fetch(`${test_prod_url}/api/product/delete/${id}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ export async function deleteProduct(id) {
 }
 
 export async function currentUser() {
-    const response = await fetch(`${API_URL}/api/user/profile/current`, {
+    const response = await fetch(`${test_prod_url}/api/user/profile/current`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -128,7 +128,7 @@ export async function currentUser() {
 }
 
 export async function editProfile(data) {
-    const response = await fetch(`${API_URL}/api/user/profile/edit`, {
+    const response = await fetch(`${test_prod_url}/api/user/profile/edit`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ export async function uploadFileAvatar(file) {
     const formData = new FormData();
     formData.append('file', file)
     formData.append('type', 'avatar');
-    const response = await fetch(`${API_URL}/api/file/upload`, {
+    const response = await fetch(`${test_prod_url}/api/file/upload`, {
         method: 'POST',
         headers: {
            'Authorization': 'Bearer ' +   localStorage.getItem('token'),
@@ -154,7 +154,7 @@ export async function uploadFileAvatar(file) {
 }
 
 export async function getEmployees() {
-    const response = await fetch(`${API_URL}/api/user/employees`, {
+    const response = await fetch(`${test_prod_url}/api/user/employees`, {
         method: 'GET',
         headers: {
             'Authorization': 'Bearer ' +   localStorage.getItem('token'),
@@ -164,7 +164,7 @@ export async function getEmployees() {
 }
 
 export async function addEmployees(data) {
-    const response = await fetch(`${API_URL}/api/user/add`, {
+    const response = await fetch(`${test_prod_url}/api/user/add`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -176,7 +176,7 @@ export async function addEmployees(data) {
 }
 
 export async function deleteEmployee(userId) {
-    const response = await fetch(`${API_URL}/api/user/employee/${userId}`, {
+    const response = await fetch(`${test_prod_url}/api/user/employee/${userId}`, {
         method: 'DELETE',
         headers: {
             'Authorization': 'Bearer ' +   localStorage.getItem('token'),
