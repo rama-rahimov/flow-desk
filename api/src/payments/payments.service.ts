@@ -22,9 +22,6 @@ export class PaymentsService {
     @InjectRepository(PaymentEntity) private readonly paymentDB: Repository<PaymentEntity>
   ) {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-    this.stripe.accounts.retrieve('').then(account => {
-      console.log('STRIPE ACCOUNT:', account.id);
-    });
   }
   async createCheckout(data:CreateCheckoutDto) {
     const session = await this.stripeService.createCheckoutSession(
