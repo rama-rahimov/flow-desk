@@ -21,6 +21,7 @@ export class PaymentsService {
     @InjectRepository(CompanyEntity) private readonly companyDB: Repository<CompanyEntity>,
     @InjectRepository(PaymentEntity) private readonly paymentDB: Repository<PaymentEntity>
   ) {
+    console.log({STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET})
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   }
   async createCheckout(data:CreateCheckoutDto) {
