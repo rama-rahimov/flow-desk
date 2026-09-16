@@ -7,6 +7,7 @@ export default function Dashboard() {
   const [form, setForm] = useState({ productCount: 0, products: [] });
   const [checkPay, setCheckPay] = useState(false);
   const [user, setUser] = useState({});
+  const [paymentData, setPaymentData] = useState({});
   const navigate = useNavigate();
   function handleLogout() {
     localStorage.removeItem('token');
@@ -36,6 +37,7 @@ export default function Dashboard() {
         const user = await currentUser();
         if(payment?.id){
           setCheckPay(payment.company_id);
+          setPaymentData(payment);
         }else {
           setCheckPay(true);
         }

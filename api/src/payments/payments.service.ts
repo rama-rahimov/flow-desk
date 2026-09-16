@@ -99,7 +99,8 @@ export class PaymentsService {
   }
 
   async checkPayment(data:UserDTO){
-    return (await this.paymentDB.findOne({where:{company_id: data.user.company.id}, relations: ['payment_status'], select:{
+    console.log({taak: (data || {}).user, company_id: ((data || {}).user || {}).company});
+    return (await this.paymentDB.findOne({where:{company_id: (((data || {}).user || {}).company || {}).id}, relations: ['payment_status'], select:{
       cancel_at_period_end:true, stripe_subscription_id:true, current_period_end:true,
         payment_status:{id:true,
         name:true}
