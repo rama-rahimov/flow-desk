@@ -35,7 +35,7 @@ export default function Dashboard() {
         const products = await findProducts(result.id);
         const user = await currentUser();
         if(payment?.id){
-          setCheckPay(payment.cancel_at_period_end);
+          setCheckPay(payment.payment_status.id !== 1);
         }else {
           setCheckPay(true);
         }

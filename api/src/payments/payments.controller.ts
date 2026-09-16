@@ -13,6 +13,7 @@ import dotenv from 'dotenv';
 import Stripe from 'stripe';
 import {UserDTO} from "../auth/dto/user.dto.js";
 import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard.js";
+import {UpdateSubDto} from "./dto/update_subscription.dto.js";
 dotenv.config();
 
 @Controller('api/payments')
@@ -42,5 +43,12 @@ export class PaymentsController {
   @HttpCode(200)
   checkPayment(@Req() req: UserDTO) {
     return this.paymentService.checkPayment(req)
+  }
+
+  @Get('update_subscription')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  updateSub(@Body() data: UpdateSubDto) {
+    return this.paymentService.updateSub(data);
   }
 }
