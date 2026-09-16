@@ -184,3 +184,13 @@ export async function deleteEmployee(userId) {
     });
     return response.json();
 }
+
+export async function checkPayment() {
+    const response = await fetch(`${test_prod_url}/api/payments/check`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' +   localStorage.getItem('token'),
+        }
+    });
+    return response.json();
+}
