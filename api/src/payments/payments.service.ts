@@ -47,18 +47,30 @@ export class PaymentsService {
       case 'checkout.session.completed': {
         console.log('Event: ', event);
         const session = event.data.object;
-        const companyId = Number(session.metadata?.companyId);
-        // const employeesCount = session.metadata?.employeesCount;
-        // const payment = await this.paymentDB.findOneBy({company_id:companyId});
-        if (companyId) {
+        const company_id = Number(session.metadata?.companyId);
+        const employeesCount = session.metadata?.employeesCount;
+        if (company_id) {
           const findCompany = await this.companyDB.findOneBy({
-            id: Number(companyId),
+            id: Number(company_id),
           });
           if (findCompany?.id) {
              await this.companyDB.update(
-              { id: Number(companyId) },
+              { id: Number(company_id) },
               { status: CompanyStatus.ACTIVE, },
             );
+            console.log({customer: session.customer_details, total_details: session.total_details, price: Number((Number(session.amount_total)/100).toFixed(2)),
+              current_period_end: new Date(session.expires_at * 1000).toISOString().split('T')[0],
+              stripe_subscription_id: String(session.subscription), employee_limit: Number(employeesCount),
+              stripe_customer_id: String(session.customer), currency: String(session.currency)});
+            const payment =  await this.paymentDB.create({payment_status:{id:1}
+              ,company_id, price: Number((Number(session.amount_total)/100).toFixed(2)),
+              current_period_end: new Date(session.expires_at * 1000).toISOString().split('T')[0],
+              stripe_subscription_id: String(session.subscription), employee_limit: Number(employeesCount),
+              stripe_customer_id: String(session.customer), currency: String(session.currency)
+            });
+            return this.paymentDB.save(payment);
+          }else {
+            throw new BadRequestException('Company not found.');
           }
         }
         console.log('Checkout completed:', session.id);
