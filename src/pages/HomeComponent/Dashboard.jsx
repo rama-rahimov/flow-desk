@@ -1,10 +1,11 @@
 import {useNavigate} from 'react-router-dom';
-import {currentUser, findProducts, payment} from "../../api.js";
+import {checkPayment, currentUser, findProducts, payment} from "../../api.js";
 import {useEffect, useState} from "react";
 
 export default function Dashboard() {
   const [company, setCompany] = useState({});
   const [form, setForm] = useState({ productCount: 0, products: [] });
+  const [checkPay, setCheckPay] = useState(false);
   const [user, setUser] = useState({});
   const navigate = useNavigate();
   function handleLogout() {
@@ -30,8 +31,14 @@ export default function Dashboard() {
    setCompany(result);
     (async () => {
       if(result?.id){
+        const payment = await checkPayment();
         const products = await findProducts(result.id);
         const user = await currentUser();
+        if(payment?.id){
+          setCheckPay(payment.cancel_at_period_end);
+        }else {
+          setCheckPay(true);
+        }
         setUser(user);
         setForm((prev) => ({...prev,
           productCount: products.length, products }));
@@ -90,14 +97,14 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
-      <button
+      {checkPay ? <button
           className="logout-button"
           onClick={() => navigate(`/${company.link}/payment`,{
             state: {company: company.link, companyId: company.id}
           })}
       >
         Subscribe
-      </button>
+      </button>:""}
     </div>
   );
 }

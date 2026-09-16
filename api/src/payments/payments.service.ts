@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {CreateCheckoutDto} from "./dto/create-checkout.dto.js";
 import {PaymentEntity} from "./entityties/payment.entity.js";
+import {UserDTO} from "../auth/dto/user.dto.js";
 dotenv.config();
 
 @Injectable()
@@ -58,10 +59,6 @@ export class PaymentsService {
               { id: Number(company_id) },
               { status: CompanyStatus.ACTIVE, },
             );
-            console.log({customer: session.customer_details, total_details: session.total_details, price: Number((Number(session.amount_total)/100).toFixed(2)),
-              current_period_end: new Date(session.expires_at * 1000).toISOString().split('T')[0],
-              stripe_subscription_id: String(session.subscription), employee_limit: Number(employeesCount),
-              stripe_customer_id: String(session.customer), currency: String(session.currency)});
             if(typeof session.customer === 'string' &&  typeof session.currency === 'string' && typeof session.subscription === 'string') {
               const payment =  await this.paymentDB.create({payment_status:{id:1}
                 ,company_id, price: Number((Number(session.amount_total)/100).toFixed(2)),
@@ -86,5 +83,9 @@ export class PaymentsService {
     return {
       received: true,
     };
+  }
+
+  async checkPayment(data:UserDTO){
+    return this.paymentDB.findOneBy({company_id: data.user.company.id});
   }
 }

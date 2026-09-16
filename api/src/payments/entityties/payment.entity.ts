@@ -7,7 +7,7 @@ export class PaymentEntity {
     id: number;
     @Column()
     company_id: number;
-    @Column()
+    @Column({nullable:true})
     status: string;
     @Column()
     employee_limit: number;
