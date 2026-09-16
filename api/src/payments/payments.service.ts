@@ -99,7 +99,11 @@ export class PaymentsService {
   }
 
   async checkPayment(data:UserDTO){
-    return this.paymentDB.findOneBy({company_id: data.user.company.id});
+    return this.paymentDB.findOne({where:{company_id: data.user.company.id}, relations: ['payment_status'], select:{
+      cancel_at_period_end:true, stripe_subscription_id:true, current_period_end:true,
+        payment_status:{id:true,
+        name:true}
+      }});
   }
 
   async updateSub(data: UpdateSubDto){
