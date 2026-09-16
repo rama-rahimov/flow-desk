@@ -62,13 +62,18 @@ export class PaymentsService {
               current_period_end: new Date(session.expires_at * 1000).toISOString().split('T')[0],
               stripe_subscription_id: String(session.subscription), employee_limit: Number(employeesCount),
               stripe_customer_id: String(session.customer), currency: String(session.currency)});
-            const payment =  await this.paymentDB.create({payment_status:{id:1}
-              ,company_id, price: Number((Number(session.amount_total)/100).toFixed(2)),
-              current_period_end: new Date(session.expires_at * 1000).toISOString().split('T')[0],
-              stripe_subscription_id: String(session.subscription), employee_limit: Number(employeesCount),
-              stripe_customer_id: String(session.customer), currency: String(session.currency)
-            });
-            return this.paymentDB.save(payment);
+            if(typeof session.customer === 'number' && typeof employeesCount === 'number' && typeof session.currency === 'string'
+                && typeof session.subscription === 'string') {
+              const payment =  await this.paymentDB.create({payment_status:{id:1}
+                ,company_id, price: Number((Number(session.amount_total)/100).toFixed(2)),
+                current_period_end: new Date(session.expires_at * 1000).toISOString().split('T')[0],
+                stripe_subscription_id: session.subscription, employee_limit: employeesCount,
+                stripe_customer_id: session.customer, currency: session.currency
+              });
+              return this.paymentDB.save(payment);
+            }else {
+              return {success: false, error: 'Payment not found'};
+            }
           }else {
             throw new BadRequestException('Company not found.');
           }
