@@ -50,6 +50,11 @@ export class PaymentsService {
         const session = event.data.object;
         const company_id = Number(session.metadata?.companyId);
         const employeesCount = session.metadata?.employeesCount;
+        if(typeof session.subscription !== 'string') {
+          throw new BadRequestException('Subscription ID is missing');
+        }
+        const subscription = await this.stripeService.retrieve(session.subscription);
+        console.log({subscription});
         if (company_id) {
           const findCompany = await this.companyDB.findOneBy({
             id: Number(company_id),
@@ -59,11 +64,10 @@ export class PaymentsService {
               { id: Number(company_id) },
               { status: CompanyStatus.ACTIVE, },
             );
-            if(typeof session.customer === 'string' &&  typeof session.currency === 'string' && typeof session.subscription === 'string') {
-              console.log("ttaaaakkk");
+            if(typeof session.customer === 'string' &&  typeof session.currency === 'string') {
               const payment = this.paymentDB.create({payment_status:{id:1}
                 ,company_id, price: Number((Number(session.amount_total)/100).toFixed(2)),
-                current_period_end: new Date(session.expires_at * 1000).toISOString().split('T')[0],
+                current_period_end: new Date(session.expires_at  * 1000).toISOString().split('T')[0],
                 stripe_subscription_id: session.subscription, employee_limit: Number(employeesCount),
                 stripe_customer_id: session.customer, currency: session.currency
               });

@@ -45,4 +45,8 @@ export class StripeService {
     return await this.stripe.subscriptions.update(data.sub_id, {cancel_at_period_end: data.cancel_at_period_end,
       metadata:{paymentId: data.paymentId, companyId: data.companyId, cancelAtPeriodEnd: data.cancel_at_period_end?1:0}});
   }
+
+  async retrieve(sessionId:string) {
+    return await this.stripe.subscriptions.retrieve(sessionId);
+  }
 }
