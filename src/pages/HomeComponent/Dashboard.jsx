@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 
 export default function Dashboard() {
   const [company, setCompany] = useState({});
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ productCount: 0, products: [] });
   const [checkPay, setCheckPay] = useState(false);
   const [user, setUser] = useState({});
@@ -35,8 +36,8 @@ export default function Dashboard() {
         const payment = await checkPayment();
         const products = await findProducts(result.id);
         const user = await currentUser();
-        if(payment?.id){
-          setCheckPay(payment.company_id);
+        if((payment || {}).payment_status?.id){
+          setCheckPay(payment.payment_status.id !== 1);
           setPaymentData(payment);
         }else {
           setCheckPay(true);
@@ -44,69 +45,70 @@ export default function Dashboard() {
         setUser(user);
         setForm((prev) => ({...prev,
           productCount: products.length, products }));
+        setLoading(true)
       }
     })()
   },[])
 
   return (
-    <div className="dashboard">
-      <header className="dashboard-header">
-        <h1>FlowDesk</h1>
+        !loading ? <h1>Loading...</h1> : <div className="dashboard">
+          <header className="dashboard-header">
+            <h1>FlowDesk</h1>
 
-        <button
-            className="logout-button"
-            onClick={handleProfile}
-        >
-          Profile
-        </button>
+            <button
+                className="logout-button"
+                onClick={handleProfile}
+            >
+              Profile
+            </button>
 
-        <button
-          className="logout-button"
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
-      </header>
+            <button
+                className="logout-button"
+                onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </header>
 
-      <main className="dashboard-content">
-        <h2>Dashboard</h2>
+          <main className="dashboard-content">
+            <h2>Dashboard</h2>
 
-        <p>Welcome to FlowDesk</p>
+            <p>Welcome to FlowDesk</p>
 
-        <div className="dashboard-cards">
-          <div className="dashboard-card">
-            <h3>Clients</h3>
-            <p>0</p>
-          </div>
-          {
-            user.role_id === 1 && <div className="dashboard-card" onClick={() => navigate(`/${company.link}/employees`,{
-                state: {company: company.link }
-              })}>
-                <h3>Employees</h3>
-                {/*<p>0</p>*/}
+            <div className="dashboard-cards">
+              <div className="dashboard-card">
+                <h3>Clients</h3>
+                <p>0</p>
               </div>
-          }
-          <div className="dashboard-card" onClick={() => navigate(`/${company.link}/products`, {
-            state: {products: form.products, companyId: company.id, companyName: company.link }
-          })}>
-            <h3>Products</h3>
-            <p>{form.productCount}</p>
-          </div>
+              {
+                  user.role_id === 1 && <div className="dashboard-card" onClick={() => navigate(`/${company.link}/employees`,{
+                    state: {company: company.link }
+                  })}>
+                    <h3>Employees</h3>
+                    {/*<p>0</p>*/}
+                  </div>
+              }
+              <div className="dashboard-card" onClick={() => navigate(`/${company.link}/products`, {
+                state: {products: form.products, companyId: company.id, companyName: company.link }
+              })}>
+                <h3>Products</h3>
+                <p>{form.productCount}</p>
+              </div>
 
-          <div className="dashboard-card">
-            <h3>Deals</h3>
-            <p>0</p>
-          </div>
+              <div className="dashboard-card">
+                <h3>Deals</h3>
+                <p>0</p>
+              </div>
+            </div>
+          </main>
+          <button
+              className="logout-button"
+              onClick={() => navigate(`/${company.link}/payment`,{
+                state: {company: company.link, companyId: company.id, checkPay, paymentData},
+              })}
+          >
+            Subscribe
+          </button>
         </div>
-      </main>
-      {checkPay ? <button
-          className="logout-button"
-          onClick={() => navigate(`/${company.link}/payment`,{
-            state: {company: company.link, companyId: company.id}
-          })}
-      >
-        Subscribe
-      </button>:""}
-    </div>
   );
 }

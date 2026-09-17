@@ -194,3 +194,14 @@ export async function checkPayment() {
     });
     return response.json();
 }
+
+export async function updateSubscription(data) {
+    const response = await fetch(`${test_prod_url}/api/payments/update_subscription`, {
+        method: 'Put',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' +   localStorage.getItem('token'),
+        }, body: JSON.stringify(data)
+    });
+    return response.json();
+}

@@ -1,11 +1,13 @@
 import {useState} from 'react';
 import './Payment.css';
-import {payment} from "../../api.js";
+import {updateSubscription, payment} from "../../api.js";
 import {useLocation} from "react-router-dom";
 
 export default function Payment() {
     const [loadingPlan, setLoadingPlan] = useState(null);
     const location = useLocation();
+    const [paymentData] = useState(location.state.paymentData);
+    const [checkPay] = useState(location.state.checkPay);
     const [companyId] = useState(location.state.companyId);
     const [employeesCount, setEmployeesCount] = useState(1);
     const PRICING_PLANS = [
@@ -38,6 +40,16 @@ export default function Payment() {
         },
     ];
 
+   const cancelSub = async () => {
+        const res = confirm('Do you want to cancel the subscription?');
+        if (res) {
+         const data = {sub_id:paymentData.stripe_subscription_id,
+          cancel_at_period_end:true, paymentId:paymentData.id, companyId};
+        const resCancel = await updateSubscription(data);
+        console.log({resCancel});
+        }
+    }
+
     const handleSubscribe = async (planId, price) => {
         setLoadingPlan(planId);
         try {
@@ -56,12 +68,11 @@ export default function Payment() {
             setLoadingPlan(null);
         }
     };
-
     return (
         <main className="pricing-container">
             <header className="pricing-header">
-                <h1>Choose Your Subscription Plan</h1>
-                <h1>Employees count {employeesCount}</h1>
+                 <h1>{checkPay?'Choose Your Subscription Plan':'You already subscribed!'}</h1>
+                <h1>Employees limit {employeesCount}</h1>
                 <p>Unlock premium features and scale your workflow with our flexible plans.</p>
             </header>
             <div className="pricing-grid">
@@ -71,14 +82,11 @@ export default function Payment() {
                         className={`pricing-card ${plan.isPopular ? 'popular' : ''}`}
                     >
                         {plan.isPopular && <span className="badge">Most Popular</span>}
-
                         <h2 className="plan-name">{plan.name}</h2>
-
                         <div className="plan-price">
                             <span className="amount">{plan.price}</span>
                             <span className="period">/{plan.period}</span>
                         </div>
-
                         <ul className="features-list">
                             {plan.features.map((feature, idx) => (
                                 <li key={idx}>
@@ -86,7 +94,6 @@ export default function Payment() {
                                 </li>
                             ))}
                         </ul>
-
                         <button
                             onClick={() => handleSubscribe(plan.id, plan.price)}
                             disabled={loadingPlan !== null || (plan.id === '1' && employeesCount > 3) }
@@ -98,7 +105,6 @@ export default function Payment() {
                 ))}
                 <div className="employees-count-container">
                     <p>Change your employees count</p>
-
                     <div className="employees-count-buttons">
                         <button
                             className="btn-secondary"
@@ -107,9 +113,7 @@ export default function Payment() {
                         >
                             −
                         </button>
-
                         <span>{employeesCount}</span>
-
                         <button
                             className="btn-secondary"
                             onClick={() => setEmployeesCount(prev => prev + 1)}
@@ -119,6 +123,8 @@ export default function Payment() {
                     </div>
                 </div>
             </div>
+            <h1 style={{color:'red', textAlign:'center'}}>You already subscribed</h1>
+            <button style={{textAlign:'center'}} onClick={cancelSub}>Cancel subscribed</button>
         </main>
     );
 }
