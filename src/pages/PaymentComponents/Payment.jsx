@@ -50,6 +50,16 @@ export default function Payment() {
         }
     }
 
+    const reCancelSub = async () => {
+        const res = confirm('Do you want to cancel the subscription?');
+        if (res) {
+            const data = {sub_id:paymentData.stripe_subscription_id,
+                cancel_at_period_end:false, paymentId:paymentData.id, companyId};
+            const resCancel = await updateSubscription(data);
+            console.log({resCancel});
+        }
+    }
+
     const handleSubscribe = async (planId, price) => {
         setLoadingPlan(planId);
         try {
@@ -123,8 +133,13 @@ export default function Payment() {
                     </div>
                 </div>
             </div>
-            <h1 style={{color:'red', textAlign:'center'}}>You already subscribed</h1>
-            <button style={{textAlign:'center'}} onClick={cancelSub}>Cancel subscribed</button>
+            {!checkPay ? paymentData.cancel_at_period_end?<div style={{textAlign: 'center'}}><h1 style={{color: 'red', paddingBottom: '20px'}}>You already subscribed</h1>
+                <button onClick={cancelSub}>Cancel subscribe</button>
+            </div>:<div style={{textAlign: 'center'}}>
+                <h1 style={{color: 'red', paddingBottom: '20px'}}>You already canceled subscribed to end subscribe rest </h1>
+                <h2>You can recancel your subscribe</h2>
+                <button onClick={reCancelSub}>Recancel subscribe</button>
+            </div>:''}
         </main>
     );
 }
