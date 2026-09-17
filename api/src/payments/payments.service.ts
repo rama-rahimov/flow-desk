@@ -60,6 +60,7 @@ export class PaymentsService {
               { status: CompanyStatus.ACTIVE, },
             );
             if(typeof session.customer === 'string' &&  typeof session.currency === 'string' && typeof session.subscription === 'string') {
+              console.log("ttaaaakkk");
               const payment = this.paymentDB.create({payment_status:{id:1}
                 ,company_id, price: Number((Number(session.amount_total)/100).toFixed(2)),
                 current_period_end: new Date(session.expires_at * 1000).toISOString().split('T')[0],
