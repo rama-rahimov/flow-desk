@@ -62,7 +62,8 @@ export class StripeService {
       product_data:{
         name: 'FlowDesk subscription',
       }
-    })
+    });
+    console.log({price, subscription});
     return await this.stripe.invoices.createPreview({
       subscription:data.subscription_id,
       subscription_details:{
