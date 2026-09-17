@@ -5,7 +5,7 @@ import {
   Post,
   RawBodyRequest,
   Req,
-  Headers, Get, UseGuards,
+  Headers, Get, UseGuards, Put,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service.js';
 import { CreateCheckoutDto } from './dto/create-checkout.dto.js';
@@ -45,7 +45,7 @@ export class PaymentsController {
     return this.paymentService.checkPayment(req)
   }
 
-  @Get('update_subscription')
+  @Put('update_subscription')
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   updateSub(@Body() data: UpdateSubDto) {
