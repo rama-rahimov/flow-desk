@@ -1,15 +1,17 @@
-import {useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import './Payment.css';
-import {updateSubscription, payment} from "../../api.js";
-import {useLocation} from "react-router-dom";
+import {updateSubscription, payment, checkPayment, amount_due} from "../../api.js";
+import {useNavigate} from "react-router-dom";
 
 export default function Payment() {
     const [loadingPlan, setLoadingPlan] = useState(null);
-    const location = useLocation();
-    const [paymentData] = useState(location.state.paymentData);
-    const [checkPay] = useState(location.state.checkPay);
-    const [companyId] = useState(location.state.companyId);
-    const [employeesCount, setEmployeesCount] = useState(1);
+    const navigate = useNavigate();
+    const [paymentData, setPaymentData] = useState({});
+    const [isChange, setIsChange] = useState(true);
+    const [doSwitch, setDoSwitch]  = useState(false);
+    const [checkPay, setCheckPay] = useState(false);
+    const [company, setCompany] = useState({});
+    const [employeesCount, setEmployeesCount] = useState(paymentData.employee_limit ? paymentData.employee_limit : 1);
     const PRICING_PLANS = [
         {
             id: '1',
@@ -44,20 +46,29 @@ export default function Payment() {
         const res = confirm('Do you want to cancel the subscription?');
         if (res) {
          const data = {sub_id:paymentData.stripe_subscription_id,
-          cancel_at_period_end:true, paymentId:paymentData.id, companyId};
+          cancel_at_period_end:true, paymentId:paymentData.id, companyId: company?.id};
         const resCancel = await updateSubscription(data);
         console.log({resCancel});
+        setIsChange((prev) => !prev)
         }
-    }
+   }
 
     const reCancelSub = async () => {
         const res = confirm('Do you want to cancel the subscription?');
         if (res) {
             const data = {sub_id:paymentData.stripe_subscription_id,
-                cancel_at_period_end:false, paymentId:paymentData.id, companyId};
-            const resCancel = await updateSubscription(data);
-            console.log({resCancel});
+            cancel_at_period_end:false, paymentId:paymentData.id, companyId: company?.id};
+            const resReCancelSub = await updateSubscription(data);
+            console.log({resReCancelSub});
+            setIsChange((prev) => !prev)
         }
+    }
+
+    const amountDue = async (price) => {
+        const [currency, ...pr] = price.split('');
+       const result = await amount_due({subscription_id:paymentData.stripe_subscription_id,
+        price:String(pr.join(''))});
+        console.log({result});
     }
 
     const handleSubscribe = async (planId, price) => {
@@ -65,7 +76,7 @@ export default function Payment() {
         try {
             const [currency, ...pr] = price.split('');
             console.log({pr:Number(pr.join('')), currency});
-            const data = await payment({companyId, employeesCount, price: Number(pr.join(''))});
+            const data = await payment({companyId:company?.id, employeesCount, price: Number(pr.join(''))});
             if (data.url) {
                 window.location.href = data.url;
             } else {
@@ -78,14 +89,30 @@ export default function Payment() {
             setLoadingPlan(null);
         }
     };
+    useEffect(() => {
+        const result = JSON.parse(localStorage.getItem('company'));
+        setCompany(result);
+        (async () => {
+            const payment = await checkPayment();
+            if((payment || {}).payment_status?.id){
+                setCheckPay(payment.payment_status.id !== 1);
+                setPaymentData(payment);
+            }else {
+                setCheckPay(true);
+            }
+        })()
+    }, [isChange]);
     return (
         <main className="pricing-container">
             <header className="pricing-header">
-                 <h1>{checkPay?'Choose Your Subscription Plan':'You already subscribed!'}</h1>
+                <h1>{checkPay?'Choose Your Subscription Plan':'You already subscribed!'}</h1>
                 <h1>Employees limit {employeesCount}</h1>
                 <p>Unlock premium features and scale your workflow with our flexible plans.</p>
+                {!checkPay?<><p style={{paddingBottom:'15px'}}>If you want switch an other rate you can do it</p>
+                <button onClick={() => setDoSwitch((prev) => !prev)}>Switch rate</button>
+                </>:''}
             </header>
-            <div className="pricing-grid">
+            {(checkPay || doSwitch) ? <div className="pricing-grid">
                 {PRICING_PLANS.map((plan) => (
                     <section
                         key={plan.id}
@@ -105,8 +132,8 @@ export default function Payment() {
                             ))}
                         </ul>
                         <button
-                            onClick={() => handleSubscribe(plan.id, plan.price)}
-                            disabled={loadingPlan !== null || (plan.id === '1' && employeesCount > 3) }
+                            onClick={() => setCheckPay?amountDue(plan.price):handleSubscribe(plan.id, plan.price)}
+                            disabled={loadingPlan !== null || (plan.id === '1' && employeesCount > 3)}
                             className={`subscribe-btn ${plan.isPopular ? 'btn-primary' : 'btn-secondary'}`}
                         >
                             {loadingPlan === plan.id ? 'Connecting...' : plan.buttonText}
@@ -132,12 +159,12 @@ export default function Payment() {
                         </button>
                     </div>
                 </div>
-            </div>
-            {!checkPay ? paymentData.cancel_at_period_end?<div style={{textAlign: 'center'}}><h1 style={{color: 'red', paddingBottom: '20px'}}>You already subscribed</h1>
+            </div>:''}
+            {!checkPay ? !paymentData.cancel_at_period_end?<div style={{textAlign: 'center'}}><h1 style={{color: 'red', paddingBottom: '20px'}}>You already subscribed</h1>
                 <button onClick={cancelSub}>Cancel subscribe</button>
             </div>:<div style={{textAlign: 'center'}}>
-                <h1 style={{color: 'red', paddingBottom: '20px'}}>You already canceled subscribed to end subscribe rest </h1>
-                <h2>You can recancel your subscribe</h2>
+                <h1 style={{color: 'red', paddingBottom: '20px'}}>You already canceled subscribed to end subscribe {(new Date().getDate() - new Date().getDate()) > 0 ? `rest ${new Date().getDate() - new Date().getDate()} day`: 'end today'}</h1>
+                <h2 style={{color: 'red', paddingBottom: '20px'}}>You can recancel your subscribe</h2>
                 <button onClick={reCancelSub}>Recancel subscribe</button>
             </div>:''}
         </main>

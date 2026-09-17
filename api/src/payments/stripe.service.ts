@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import * as process from 'node:process';
 import {CreateCheckoutDto} from "./dto/create-checkout.dto.js";
 import {UpdateSubDto} from "./dto/update_subscription.dto.js";
+import {Amount_dueDto} from "./dto/amount_due.dto.js";
 dotenv.config();
 
 @Injectable()
@@ -48,5 +49,17 @@ export class StripeService {
 
   async retrieve(sessionId:string) {
     return await this.stripe.subscriptions.retrieve(sessionId);
+  }
+
+  async amount_due(data:Amount_dueDto){
+    const subscription = await this.retrieve(data.subscription_id);
+    return await this.stripe.invoices.createPreview({
+      subscription:data.subscription_id,
+      subscription_details:{
+        items:[{
+          id: subscription.items.data[0].id, price: data.price
+        }]
+      }
+    })
   }
 }
