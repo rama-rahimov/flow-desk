@@ -205,3 +205,14 @@ export async function updateSubscription(data) {
     });
     return response.json();
 }
+
+export async function amount_due(data) {
+    const response = await fetch(`${test_prod_url}/api/payments/amount_due`, {
+        method: 'Put',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' +   localStorage.getItem('token'),
+        }, body: JSON.stringify(data)
+    });
+    return response.json();
+}

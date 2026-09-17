@@ -13,6 +13,7 @@ import {CreateCheckoutDto} from "./dto/create-checkout.dto.js";
 import {PaymentEntity} from "./entityties/payment.entity.js";
 import {UserDTO} from "../auth/dto/user.dto.js";
 import {UpdateSubDto} from "./dto/update_subscription.dto.js";
+import {Amount_dueDto} from "./dto/amount_due.dto.js";
 dotenv.config();
 
 @Injectable()
@@ -112,5 +113,9 @@ export class PaymentsService {
 
   async updateSub(data: UpdateSubDto){
     return this.stripeService.updateSub(data)
+  }
+
+  async amount_due(data:Amount_dueDto){
+    return await this.stripeService.amount_due(data)
   }
 }
