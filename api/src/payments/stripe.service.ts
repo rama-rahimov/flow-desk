@@ -68,7 +68,7 @@ export class StripeService {
       subscription:data.subscription_id,
       subscription_details:{
         items:[{
-          id: price.id, price: data.price
+          id: subscription.items.data[0].id, price: price.id
         }]
       }
     })
