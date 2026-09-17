@@ -53,11 +53,21 @@ export class StripeService {
 
   async amount_due(data:Amount_dueDto){
     const subscription = await this.retrieve(data.subscription_id);
+    const price = await this.stripe.prices.create({
+      currency: 'usd',
+      unit_amount: Number(data.price)*100,
+      recurring:{
+        interval: 'month',
+      },
+      product_data:{
+        name: 'FlowDesk subscription',
+      }
+    })
     return await this.stripe.invoices.createPreview({
       subscription:data.subscription_id,
       subscription_details:{
         items:[{
-          id: subscription.items.data[0].id, price: data.price
+          id: price.id, price: data.price
         }]
       }
     })
