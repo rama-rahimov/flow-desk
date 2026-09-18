@@ -50,7 +50,7 @@ export class PaymentsService {
       case 'checkout.session.completed': {
         const session = event.data.object;
         const company_id = Number(session.metadata?.companyId);
-        const employeesCount = session.metadata?.employeesCount;
+        const employeesLimit = session.metadata?.employeesLimit;
         if(typeof session.subscription !== 'string') {
           throw new BadRequestException('Subscription ID is missing');
         }
@@ -69,7 +69,7 @@ export class PaymentsService {
               const payment = this.paymentDB.create({payment_status:{id:1}
                 ,company_id, price: Number((Number(session.amount_total)/100).toFixed(2)),
                 current_period_end: new Date(session.expires_at  * 1000).toISOString().split('T')[0],
-                stripe_subscription_id: session.subscription, employee_limit: Number(employeesCount),
+                stripe_subscription_id: session.subscription, employee_limit: Number(employeesLimit),
                 stripe_customer_id: session.customer, currency: session.currency
               });
               await this.paymentDB.save(payment);
@@ -86,9 +86,9 @@ export class PaymentsService {
       case "customer.subscription.updated":{
         console.log('Event: ', event);
         const session = event.data.object;
-        const {companyId, paymentId, cancelAtPeriodEnd} = session.metadata;
-        console.log({session, companyId, paymentId, cancelAtPeriodEnd});
-        if(companyId && paymentId && cancelAtPeriodEnd){
+        const {paymentId, cancelAtPeriodEnd, employee_limit, price} = session.metadata;
+        console.log({session, paymentId, cancelAtPeriodEnd});
+        if(paymentId && String(cancelAtPeriodEnd)){
           await this.paymentDB.update({id: Number(paymentId)},{cancel_at_period_end: !!Number(cancelAtPeriodEnd)});
         }else {
           throw new BadRequestException('Something went wrong');

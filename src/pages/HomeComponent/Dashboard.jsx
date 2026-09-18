@@ -1,5 +1,5 @@
 import {useNavigate} from 'react-router-dom';
-import {checkPayment, currentUser, findProducts, payment} from "../../api.js";
+import {checkPayment, currentUser, findProducts} from "../../api.js";
 import {useEffect, useState} from "react";
 
 export default function Dashboard() {
@@ -17,15 +17,6 @@ export default function Dashboard() {
 
   function handleProfile() {
     navigate(`/${company.link}/profile`);
-  }
-
-  async function handlePayment() {
-    const result = await payment({ companyId: company.id, employeesCount: company.employments_count });
-    if(result.success) {
-      window.open(result.url, '_blank');
-    }else {
-      alert('Something went wrong!');
-    }
   }
 
   useEffect(() => {

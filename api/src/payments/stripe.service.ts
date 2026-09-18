@@ -34,7 +34,7 @@ export class StripeService {
       ],
       metadata: {
         companyId:data.companyId,
-        employeesCount: data.employeesCount
+        employeesLimit: data.employeesLimit
       },
       success_url: 'http://localhost:5173/payment/success',
       cancel_url: 'http://localhost:5173/payment/cancel',
@@ -44,7 +44,8 @@ export class StripeService {
   async updateSub(data: UpdateSubDto) {
     console.log({data});
     return await this.stripe.subscriptions.update(data.sub_id, {cancel_at_period_end: data.cancel_at_period_end,
-      metadata:{paymentId: data.paymentId, companyId: data.companyId, cancelAtPeriodEnd: data.cancel_at_period_end?1:0}});
+      metadata:{paymentId: data.paymentId, cancelAtPeriodEnd: data.cancel_at_period_end?1:0,
+        employee_limit:data.employee_limit, price:data.price}});
   }
 
   async retrieve(sessionId:string) {

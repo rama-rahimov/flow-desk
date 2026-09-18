@@ -9,5 +9,5 @@ export class CreateCheckoutDto {
 
   @IsInt()
   @Min(1)
-  employeesCount: number;
+  employeesLimit: number;
 }
