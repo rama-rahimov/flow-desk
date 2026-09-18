@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useState} from 'react';
 import './Payment.css';
 import {updateSubscription, payment, checkPayment, amount_due} from "../../api.js";
 import {useNavigate} from "react-router-dom";
@@ -11,7 +11,7 @@ export default function Payment() {
     const [doSwitch, setDoSwitch]  = useState(false);
     const [checkPay, setCheckPay] = useState(false);
     const [company, setCompany] = useState({});
-    const [employeesCount, setEmployeesCount] = useState(paymentData.employee_limit ? paymentData.employee_limit : 1);
+    const [employeesLimit, setEmployeesLimit] = useState(paymentData.employee_limit ? paymentData.employee_limit : 1);
     const PRICING_PLANS = [
         {
             id: '1',
@@ -25,7 +25,7 @@ export default function Payment() {
         {
             id: '2',
             name: 'Pro',
-            price: `$${10*employeesCount}`,
+            price: `$${10*employeesLimit}`,
             period: 'month',
             features: ['Everything in Hobby', 'Advanced analytics', 'Priority email support', 'Exclusive masterclasses'],
             buttonText: 'Upgrade to Pro',
@@ -34,7 +34,7 @@ export default function Payment() {
         {
             id: '3',
             name: 'Enterprise',
-            price: `$${20*employeesCount}`,
+            price: `$${20*employeesLimit}`,
             period: 'month',
             features: ['Everything in Pro', 'Unlimited team members', 'Dedicated account manager', 'Custom API access'],
             buttonText: 'Contact Sales',
@@ -66,9 +66,16 @@ export default function Payment() {
 
     const amountDue = async (price) => {
         const [currency, ...pr] = price.split('');
-       const result = await amount_due({subscription_id:paymentData.stripe_subscription_id,
-        price:String(pr.join(''))});
-        console.log({result});
+       const result = await amount_due({subscription_id:paymentData.stripe_subscription_id, price:String(pr.join(''))});
+       if(result.amount_due){
+           const price_due = Number(Number(result.amount_due)/100).toFixed(2);
+           const poll = confirm(`Price due will be $${price_due}. Do you agree with it ?`);
+           if(poll){
+               const data = {sub_id:paymentData.stripe_subscription_id,
+               cancel_at_period_end:true, paymentId:paymentData.id, price:Number(pr.join('')), employee_limit:employeesLimit};
+               const resCancel = await updateSubscription(data);
+           }
+       }
     }
 
     const handleSubscribe = async (planId, price) => {
@@ -76,7 +83,7 @@ export default function Payment() {
         try {
             const [currency, ...pr] = price.split('');
             console.log({pr:Number(pr.join('')), currency});
-            const data = await payment({companyId:company?.id, employeesCount, price: Number(pr.join(''))});
+            const data = await payment({companyId:company?.id, employeesLimit, price: Number(pr.join(''))});
             if (data.url) {
                 window.location.href = data.url;
             } else {
@@ -106,7 +113,7 @@ export default function Payment() {
         <main className="pricing-container">
             <header className="pricing-header">
                 <h1>{checkPay?'Choose Your Subscription Plan':'You already subscribed!'}</h1>
-                <h1>Employees limit {employeesCount}</h1>
+                <h1>Employees limit {employeesLimit}</h1>
                 <p>Unlock premium features and scale your workflow with our flexible plans.</p>
                 {!checkPay?<><p style={{paddingBottom:'15px'}}>If you want switch an other rate you can do it</p>
                 <button onClick={() => setDoSwitch((prev) => !prev)}>Switch rate</button>
@@ -133,7 +140,7 @@ export default function Payment() {
                         </ul>
                         <button
                             onClick={() => setCheckPay?amountDue(plan.price):handleSubscribe(plan.id, plan.price)}
-                            disabled={loadingPlan !== null || (plan.id === '1' && employeesCount > 3)}
+                            disabled={loadingPlan !== null || (plan.id === '1' && employeesLimit > 3)}
                             className={`subscribe-btn ${plan.isPopular ? 'btn-primary' : 'btn-secondary'}`}
                         >
                             {loadingPlan === plan.id ? 'Connecting...' : plan.buttonText}
@@ -141,19 +148,19 @@ export default function Payment() {
                     </section>
                 ))}
                 <div className="employees-count-container">
-                    <p>Change your employees count</p>
+                    <p>Change your employees limit</p>
                     <div className="employees-count-buttons">
                         <button
                             className="btn-secondary"
-                            onClick={() => setEmployeesCount(prev => prev - 1)}
-                            disabled={employeesCount <= 1}
+                            onClick={() => setEmployeesLimit(prev => prev - 1)}
+                            disabled={employeesLimit <= 1}
                         >
                             −
                         </button>
-                        <span>{employeesCount}</span>
+                        <span>{employeesLimit}</span>
                         <button
                             className="btn-secondary"
-                            onClick={() => setEmployeesCount(prev => prev + 1)}
+                            onClick={() => setEmployeesLimit(prev => prev + 1)}
                         >
                             +
                         </button>

@@ -1,4 +1,4 @@
-import {IsBoolean, IsInt, IsString} from 'class-validator';
+import {IsBoolean, IsDecimal, IsInt, IsOptional, IsString} from 'class-validator';
 
 export class UpdateSubDto {
     @IsString()
@@ -7,6 +7,10 @@ export class UpdateSubDto {
     cancel_at_period_end: boolean;
     @IsInt()
     paymentId:number;
+    @IsOptional()
     @IsInt()
-    companyId:number;
+    employee_limit:number;
+    @IsOptional()
+    @IsDecimal()
+    price:number;
 }
