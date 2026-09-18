@@ -88,8 +88,13 @@ export class PaymentsService {
         const session = event.data.object;
         const {paymentId, cancelAtPeriodEnd, employee_limit, price} = session.metadata;
         console.log({session, paymentId, cancelAtPeriodEnd});
+        let obj = {cancel_at_period_end: !!Number(cancelAtPeriodEnd)};
+        if(employee_limit && String(price)){
+          obj['employee_limit'] = employee_limit;
+          obj['price'] = price;
+        }
         if(paymentId && String(cancelAtPeriodEnd)){
-          await this.paymentDB.update({id: Number(paymentId)},{cancel_at_period_end: !!Number(cancelAtPeriodEnd)});
+          await this.paymentDB.update({id: Number(paymentId)},obj);
         }else {
           throw new BadRequestException('Something went wrong');
         }
