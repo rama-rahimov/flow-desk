@@ -70,13 +70,13 @@ export default function Payment() {
        if(result.amount_due){
            const price_due = Number(Number(result.amount_due)/100).toFixed(2);
            const poll = confirm(`Price due will be $${price_due}. Do you agree with it ?`);
-           console.log({price:Number(pr.join('')).toFixed(2), ttt:'rttrtgtrgrtgrt'});
            if(poll){
                const data = {sub_id:paymentData.stripe_subscription_id,
                cancel_at_period_end:true, paymentId:paymentData.id, price:Number(pr.join('')).toFixed(2), employee_limit:employeesLimit};
                const result = await updateSubscription(data);
                console.log({result});
                if(result?.id){
+                   setDoSwitch(false);
                    setIsChange((prev) => !prev);
                }else {
                    alert('Something went wrong!');
@@ -175,7 +175,16 @@ export default function Payment() {
                         </button>
                     </div>
                 </div>
-            </div>:''}
+            </div>:<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                <label>Price</label>
+                <input  style={{marginBottom:'10px'}} type="text" disabled={true} defaultValue={`$${paymentData.price}`}/>
+                <label>Employee limit</label>
+                <input  style={{marginBottom:'10px'}} type="text" defaultValue={paymentData.employee_limit} disabled={true} />
+                <label>To get money from kart rest day</label>
+                <input  style={{marginBottom:'10px'}} type="text" disabled={true} defaultValue={new Date(paymentData.current_period_end).getDate()-new Date().getDate()}/>
+                <label>Status</label>
+                <input type="text" disabled={true} defaultValue={paymentData.status} />
+            </div>}
             {!checkPay ? !paymentData.cancel_at_period_end?<div style={{textAlign: 'center'}}><h1 style={{color: 'red', paddingBottom: '20px'}}>You already subscribed</h1>
                 <button onClick={cancelSub}>Cancel subscribe</button>
             </div>:<div style={{textAlign: 'center'}}>
