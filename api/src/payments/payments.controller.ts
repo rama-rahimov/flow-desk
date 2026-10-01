@@ -42,8 +42,8 @@ export class PaymentsController {
   @Get('check')
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
-  checkPayment(@Req() req: UserDTO) {
-    return this.paymentService.checkPayment(req)
+  checkPayment(@Req() req: Request) {
+    return this.paymentService.checkPayment(req);
   }
 
   @Put('update_subscription')
