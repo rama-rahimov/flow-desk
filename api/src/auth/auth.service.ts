@@ -28,7 +28,6 @@ export class AuthService {
         password,
         companyName,
         link,
-        employmentsCount,
         startWork,
         role_id,
         companyId,
@@ -59,7 +58,6 @@ export class AuthService {
           } else {
             const createCompany = this.companyDB.create({
               name: companyName,
-              employments_count: employmentsCount,
               start_work: startWork,
               link,
             });
