@@ -7,7 +7,7 @@ import {
   CompanyEntity,
   CompanyStatus,
 } from '../companies/entities/company.entity.js';
-import { Repository } from 'typeorm';
+import {Not, Repository} from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {CreateCheckoutDto} from "./dto/create-checkout.dto.js";
 import {PaymentEntity} from "./entityties/payment.entity.js";
@@ -45,7 +45,6 @@ export class PaymentsService {
       console.log('Webhook verification failed: ', error);
       throw new BadRequestException('Invalid webhook signature');
     }
-    console.log('Verified Stripe event: ', event.type);
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object;
@@ -55,24 +54,20 @@ export class PaymentsService {
           throw new BadRequestException('Subscription ID is missing');
         }
         const subscription = await this.stripeService.retrieve(session.subscription);
-        console.log({subscription});
         if (company_id) {
           const findCompany = await this.companyDB.findOneBy({
             id: Number(company_id),
           });
           if (findCompany?.id) {
-             await this.companyDB.update(
-              { id: Number(company_id) },
-              { status: CompanyStatus.ACTIVE, },
-            );
+            await this.companyDB.update({ id: Number(company_id) }, { status: CompanyStatus.ACTIVE });
             if(typeof session.customer === 'string' &&  typeof session.currency === 'string') {
               const payment = this.paymentDB.create({payment_status:{id:1}
-                ,company_id, price: Number((Number(session.amount_total)/100).toFixed(2)),
-                current_period_end: new Date(session.expires_at  * 1000).toISOString().split('T')[0],
-                stripe_subscription_id: session.subscription, employee_limit: Number(employeesLimit),
-                stripe_customer_id: session.customer, currency: session.currency
-              });
-              await this.paymentDB.save(payment);
+              ,company_id, price: Number((Number(session.amount_total)/100).toFixed(2)),
+               current_period_end: subscription.cancel_at ? new Date(subscription.cancel_at * 1000).toISOString().split('T')[0]:'',
+              stripe_subscription_id: session.subscription, employee_limit: Number(employeesLimit),
+              stripe_customer_id: session.customer, currency: session.currency
+            });
+            await this.paymentDB.save(payment);
             }else {
               throw new BadRequestException('Payment not found.');
             }
@@ -80,14 +75,12 @@ export class PaymentsService {
             throw new BadRequestException('Company not found.');
           }
         }
-        console.log('Checkout completed:', session.id);
+        console.log('checkout.session.completed');
         break;
       }
       case "customer.subscription.updated":{
-        console.log('Event: ', event);
         const session = event.data.object;
         const {paymentId, cancelAtPeriodEnd, employee_limit, price} = session.metadata;
-        console.log({session, paymentId, cancelAtPeriodEnd});
         let obj = {cancel_at_period_end: !!Number(cancelAtPeriodEnd)};
         if(employee_limit && String(price)){
           obj['employee_limit'] = employee_limit;
@@ -101,6 +94,24 @@ export class PaymentsService {
         console.log('customer.subscription.updated:');
         break;
       }
+      case "customer.subscription.deleted":{
+        const subscription = event.data.object;
+        const sub_id = subscription?.id;
+        await this.paymentDB.update({stripe_subscription_id:sub_id},{payment_status:{id:2}});
+        console.log('customer.subscription.deleted');
+        break;
+      }
+      case "invoice.payment_failed":{
+        const invoice = event.data.object;
+        const subscriptionId = invoice.parent?.subscription_details?.subscription;
+        if (typeof subscriptionId === 'string') {
+          await this.paymentDB.update({stripe_subscription_id:subscriptionId},{payment_status:{id:2}});
+        }else {
+          throw new BadRequestException('Something went wrong!');
+        }
+        console.log("invoice.payment_failed");
+        break;
+      }
       default:
         console.log(`Unhandled event type: ${event.type}`);
     }
@@ -110,7 +121,7 @@ export class PaymentsService {
   }
 
   async checkPayment(data:UserDTO){
-    return await this.paymentDB.findOne({where:{company_id: data.user.company.id}, relations: ['payment_status'], select:{
+    return await this.paymentDB.findOne({where:{company_id: data.user.company.id, payment_status:{id:Not(2)}}, relations: ['payment_status'], select:{
       id: true, cancel_at_period_end:true, stripe_subscription_id:true, current_period_end:true,
         employee_limit:true, price:true, currency:true,
         payment_status:{id:true, name:true}

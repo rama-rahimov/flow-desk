@@ -201,3 +201,7 @@
 .btn-secondary:active {
     transform: scale(0.97);
 }
+
+label{
+    color: aliceblue;
+}

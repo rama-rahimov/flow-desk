@@ -6,7 +6,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background: #f5f6f8;
+    background: #121214;
     color: #1f2937;
 }
 
@@ -87,7 +87,7 @@ button {
 .auth-link button {
     border: none;
     background: none;
-    color: #2563eb;
+    color: #f3f4f6;
 }
 
 /* Dashboard */
