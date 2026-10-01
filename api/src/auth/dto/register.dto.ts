@@ -21,9 +21,6 @@ export class RegisterDto {
   link: string;
   @ValidateIf((obj: { role_id: number }) => obj.role_id === 2)
   @IsNotEmpty()
-  employmentsCount: number;
-  @ValidateIf((obj: { role_id: number }) => obj.role_id === 2)
-  @IsNotEmpty()
   startWork: string;
   @ValidateIf((obj: { role_id: number }) => obj.role_id === 1)
   @IsNotEmpty()

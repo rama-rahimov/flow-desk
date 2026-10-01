@@ -19,6 +19,7 @@ import Products from "./pages/Products/Products.jsx";
 import Profile from "./pages/Profile/Profile.jsx";
 import Employees from "./pages/Employees/Employees.jsx";
 import Payment from "./pages/PaymentComponents/Payment.jsx";
+import ProfileRamiz from "./pages/Profile/RamizProfile.jsx";
 
 function AppContent() {
     const navigate = useNavigate();
@@ -48,6 +49,7 @@ function AppContent() {
             <Route path='/:companyLink/employees' element={<Employees />} />
             <Route path="/:companyLink/login" element={<Login />}/>
             <Route path="/:companyLink/profile" element={<Profile />}/>
+            <Route path="/:companyLink/profile_ramiz" element={<ProfileRamiz />}/>
             <Route path="/:companyLink/register" element={<Register />}/>
             <Route path="/:companyLink/products" element={<Products />}/>
             <Route path="/register" element={<Register />}/>

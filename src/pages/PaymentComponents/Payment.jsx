@@ -11,7 +11,7 @@ export default function Payment() {
     const [doSwitch, setDoSwitch]  = useState(false);
     const [checkPay, setCheckPay] = useState(false);
     const [company, setCompany] = useState({});
-    const [employeesLimit, setEmployeesLimit] = useState(paymentData.employee_limit ? paymentData.employee_limit : 1);
+    const [employeesLimit, setEmployeesLimit] = useState(1);
     const PRICING_PLANS = [
         {
             id: '1',
@@ -113,11 +113,13 @@ export default function Payment() {
             if((payment || {}).payment_status?.id){
                 setCheckPay(payment.payment_status.id !== 1);
                 setPaymentData(payment);
+                setEmployeesLimit(payment.employee_limit);
             }else {
                 setCheckPay(true);
             }
         })()
     }, [isChange]);
+    console.log({paymentData});
     return (
         <main className="pricing-container">
             <header className="pricing-header">
@@ -125,8 +127,9 @@ export default function Payment() {
                 <h1>Employees limit {employeesLimit}</h1>
                 <p>Unlock premium features and scale your workflow with our flexible plans.</p>
                 {!checkPay?<><p style={{paddingBottom:'15px'}}>If you want switch an other rate you can do it</p>
-                <button onClick={() => setDoSwitch((prev) => !prev)}>Switch rate</button>
+                <button style={{marginRight:'10px'}} onClick={() => setDoSwitch((prev) => !prev)}>Switch rate</button>
                 </>:''}
+                <button onClick={() => navigate(`/${company.link}/dashboard`)}>Dashboard</button>
             </header>
             {(checkPay || doSwitch) ? <div className="pricing-grid">
                 {PRICING_PLANS.map((plan) => (
@@ -148,7 +151,7 @@ export default function Payment() {
                             ))}
                         </ul>
                         <button
-                            onClick={() => setCheckPay?amountDue(plan.price):handleSubscribe(plan.id, plan.price)}
+                            onClick={() => checkPay?amountDue(plan.price):handleSubscribe(plan.id, plan.price)}
                             disabled={loadingPlan !== null || (plan.id === '1' && employeesLimit > 3)}
                             className={`subscribe-btn ${plan.isPopular ? 'btn-primary' : 'btn-secondary'}`}
                         >
@@ -176,14 +179,16 @@ export default function Payment() {
                     </div>
                 </div>
             </div>:<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                <h3 style={{color:"#fff"}}>Your subscribe data</h3>
                 <label>Price</label>
-                <input  style={{marginBottom:'10px'}} type="text" disabled={true} defaultValue={`$${paymentData.price}`}/>
+                <input  style={{marginBottom:'10px'}} type="text" disabled={true} value={`$${paymentData.price}`}/>
                 <label>Employee limit</label>
-                <input  style={{marginBottom:'10px'}} type="text" defaultValue={paymentData.employee_limit} disabled={true} />
-                <label>To get money from kart rest day</label>
-                <input  style={{marginBottom:'10px'}} type="text" disabled={true} defaultValue={new Date(paymentData.current_period_end).getDate()-new Date().getDate()}/>
+                <input  style={{marginBottom:'10px'}} type="text" value={paymentData.employee_limit} disabled={true} />
+                {new Date(paymentData.current_period_end).getDate() - new Date().getDate() >= 1 ?<> < label > To get money from kart rest day</label>
+                    <input  style={{marginBottom:'10px'}} type="text" disabled={true} value={new Date(paymentData.current_period_end).getDate() - new Date().getDate()}/>
+                </>:''}
                 <label>Status</label>
-                <input type="text" disabled={true} defaultValue={paymentData.status} />
+                <input type="text" disabled={true} value={paymentData.payment_status?.name} />
             </div>}
             {!checkPay ? !paymentData.cancel_at_period_end?<div style={{textAlign: 'center'}}><h1 style={{color: 'red', paddingBottom: '20px'}}>You already subscribed</h1>
                 <button onClick={cancelSub}>Cancel subscribe</button>
