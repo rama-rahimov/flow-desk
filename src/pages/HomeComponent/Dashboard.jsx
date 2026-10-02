@@ -16,7 +16,7 @@ export default function Dashboard() {
   }
 
   function handleProfile() {
-    navigate(`/${company.link}/profile_ramiz`);
+    navigate(`/${company.link}/profile`);
   }
 
   useEffect(() => {

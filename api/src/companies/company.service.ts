@@ -12,7 +12,7 @@ export class CompanyService {
   async checkCompany(link: string) {
       const company = await this.companyDB.findOne({
         where: { link },
-        select: { id: true, link: true, name: true, employments_count: true },
+        select: { id: true, link: true, name: true, employments_count: true},
       });
       if (company?.id) {
         return { success: true, data: company };
