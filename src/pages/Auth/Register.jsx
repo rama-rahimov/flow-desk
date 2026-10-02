@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import {payment, register} from '../../api.js';
+import {register} from '../../api.js';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -38,7 +38,7 @@ export default function Register() {
         <div className="auth-page">
             <div className="auth-container">
                 <h1>FlowDesk</h1>
-                <h2>Create account {Number(form.role_id) === 2 ? 'company':'client'}</h2>
+                <h2>Create account {Number(form.role_id) === 2 ? 'company':''}</h2>
                 <form className="auth-form" onSubmit={handleSubmit}>
                     {
                         Number(form.role_id) === 1 ? <>
@@ -66,7 +66,7 @@ export default function Register() {
                             <input type="text" name="lastName" placeholder="Last name" value={form.lastName} onChange={handleChange} required />
                             <input type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} required />
                             <input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} minLength={5} maxLength={20} required />
-                            <button type="submit"> Register </button>
+                            <button type="submit">Register</button>
                         </>:''
                     }
                 </form>

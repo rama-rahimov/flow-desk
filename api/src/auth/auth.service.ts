@@ -33,18 +33,15 @@ export class AuthService {
         companyId,
       } = dataRegister;
       const saltRounds = await bcrypt.genSalt(10);
-      const findUserData =
-        role_id === 1 ? { email, company: { id: companyId } } : { email };
-      const findUser =
-        role_id === 2
-          ? await this.userDB.findOneBy(findUserData)
-          : await this.customerDB.findOneBy(findUserData);
-      if (role_id === 1) {
-        const findCompanyAdmin = await this.userDB.findOneBy(findUserData);
-        if (findCompanyAdmin?.id) {
-          throw new ConflictException('User already exists!!!');
-        }
-      } else if (findUser?.id) {
+      const findUserData = role_id === 1 ? { email, company: { id: companyId } } : { email };
+      const findUser = role_id === 2 ? await this.userDB.findOneBy(findUserData) : await this.customerDB.findOneBy(findUserData);
+      // if (role_id === 1) {
+      //   const findCompanyAdmin = await this.userDB.findOneBy(findUserData);
+      //   if (findCompanyAdmin?.id) {
+      //     throw new ConflictException('User already exists!!!');
+      //   }
+      // }
+      if (findUser?.id) {
         throw new ConflictException('User already exists!');
       } else {
         const hash = await bcrypt.hash(password, saltRounds);
