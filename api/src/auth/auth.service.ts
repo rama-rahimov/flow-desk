@@ -101,7 +101,7 @@ export class AuthService {
           throw new UnauthorizedException('Invalid email or password!');
         } else {
           const payload = { sub: result.id, email: result.email };
-          return { success: true, data: this.jwt.sign(payload) };
+          return { success: true, data: this.jwt.sign(payload), role_id: user ? 2: 1 };
         }
       }
   }
