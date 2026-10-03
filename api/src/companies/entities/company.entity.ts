@@ -10,6 +10,7 @@ import {
 import { CustomerEntity } from '../../customers/entities/customer.entity.js';
 import { UserEntity } from '../../users/entities/user.entity.js';
 import {ProductEntity} from "../../product/entities/product.entity.js";
+import {ConversationEntity} from "../../chat/entities/conversation.entity.js";
 
 export enum CompanyStatus {
   ACTIVE = 'ACTIVE',
@@ -48,6 +49,9 @@ export class CompanyEntity {
 
   @OneToMany(() => ProductEntity, (products) => products.company)
   products: Relation<ProductEntity>[];
+
+  @OneToMany(() => ConversationEntity, (conversation) => conversation.company)
+  conversations: Relation<ConversationEntity>[];
 
   @CreateDateColumn({ type: 'timestamptz' })
   create_at: string;

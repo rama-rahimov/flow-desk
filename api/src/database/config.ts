@@ -12,7 +12,7 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   // port: Number(process.env.DB_PORT),
   // username: process.env.DB_USERNAME,
   // password: String(process.env.DB_PASSWORD),
-  // database: process.env.DB_DATABASE,
+  // entities: process.env.DB_DATABASE,
   url: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,

@@ -12,6 +12,7 @@ import {
 import { DealEntity } from '../../deal/entities/deal.entity.js';
 import { CompanyEntity } from '../../companies/entities/company.entity.js';
 import {MediaEntity} from "../../images/entityties/image.entity.js";
+import {ConversationEntity} from "../../chat/entities/conversation.entity.js";
 
 @Entity('users')
 export class UserEntity {
@@ -38,6 +39,9 @@ export class UserEntity {
 
   @OneToMany(() => DealEntity, (deal_entity) => deal_entity.manager)
   deal_entities: Relation<DealEntity>[];
+
+  @OneToMany(() => ConversationEntity, (conversation) => conversation.user)
+  conversations: Relation<ConversationEntity>[];
 
   @OneToOne(() => MediaEntity, {
     nullable: true,

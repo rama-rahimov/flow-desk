@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { CompanyEntity } from '../../companies/entities/company.entity.js';
 import { DealEntity } from '../../deal/entities/deal.entity.js';
+import {ConversationEntity} from "../../chat/entities/conversation.entity.js";
 
 @Entity('customers')
 export class CustomerEntity {
@@ -30,6 +31,9 @@ export class CustomerEntity {
 
   @OneToMany(() => DealEntity, (deal_entity) => deal_entity.customer)
   deal_entities: Relation<DealEntity>[];
+
+  @OneToMany(() => ConversationEntity, (conversation) => conversation.customer)
+  conversations: Relation<ConversationEntity>[];
 
   @ManyToOne(() => CompanyEntity, (company) => company.customers)
   company: Relation<CompanyEntity>;
