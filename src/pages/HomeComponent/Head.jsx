@@ -8,11 +8,11 @@ export function Head() {
     const navigate = useNavigate();
     const { companyLink } = useParams();
     const [products, setProducts] = useState([]);
-    const socket = io('http://localhost:5173/', {
+    const socket = io('http://localhost:5173', {
         withCredentials: true
     });
     socket.emit('message', 'Helloooouu');
-    socket.on('response', (msg) => {``
+    socket.on('response', (msg) => {
         console.log(msg);
     })
     useEffect(() => {
