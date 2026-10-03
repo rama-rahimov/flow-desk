@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {checkCompany, findProducts, login} from "../../api.js";
+import {checkCompany, cookie, findProducts, login} from "../../api.js";
 import {useNavigate, useParams} from "react-router-dom";
 import lion from "../../images/justlion.jpg";
 
@@ -9,6 +9,7 @@ export function Head() {
     const [products, setProducts] = useState([]);
     useEffect(() => {
         (async () => {
+            const cookies = await cookie();
           const company = await checkCompany(companyLink);
           if(company?.success){
               const getProducts = await findProducts(company.data.id);
