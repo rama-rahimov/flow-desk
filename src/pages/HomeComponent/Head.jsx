@@ -10,14 +10,17 @@ export function Head() {
     const [products, setProducts] = useState([]);
     useEffect(() => {
         (async () => {
+            const cookies = await cookie();
             const socket = io(test_prod_url, {
                 withCredentials: true
             });
+            socket.on("connect", async () => {
+                console.log("Connected!");
+            })
             socket.emit('message', 'Helloooouu');
             socket.on('response', (msg) => {
                 console.log(msg);
             })
-          const cookies = await cookie();
           const company = await checkCompany(companyLink);
           if(company?.success){
               const getProducts = await findProducts(company.data.id);

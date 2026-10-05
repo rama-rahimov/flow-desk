@@ -219,7 +219,7 @@ export async function amount_due(data) {
 
 export async function cookie() {
     const response = await fetch(`${test_prod_url}/api/customer`, {
-        method: 'GET'
+        method: 'GET', credentials:'include'
     });
     return response.json();
 }

@@ -13,6 +13,7 @@ export class EventsGateway {
     server: Server;
 
     handleConnection(client: Socket) {
+        console.log("taakk", client.handshake.headers.cookie, client.handshake.headers);
         const cookies = parse(client.handshake.headers.cookie ?? '');
         const visitorId = cookies.visitorId;
         client.data.visitorId = visitorId;
