@@ -223,3 +223,10 @@ export async function cookie() {
     });
     return response.json();
 }
+
+export async function cookieClear() {
+    const response = await fetch(`${test_prod_url}/api/customer/clear`, {
+        method: 'GET', credentials:'include'
+    });
+    return response.json();
+}

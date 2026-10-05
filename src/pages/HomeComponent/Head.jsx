@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {checkCompany, cookie, findProducts, test_prod_url} from "../../api.js";
+import {checkCompany, cookie, cookieClear, findProducts, test_prod_url} from "../../api.js";
 import {useNavigate, useParams} from "react-router-dom";
 import lion from "../../images/justlion.jpg";
 import {io} from "socket.io-client";
@@ -11,7 +11,8 @@ export function Head() {
     useEffect(() => {
         (async () => {
             console.log('1. BEFORE cookie');
-            const cookies = await cookie();
+            // const cookies = await cookie();
+            await cookieClear();
             console.log('2. AFTER cookie');
             const socket = io(test_prod_url, {
                 withCredentials: true
