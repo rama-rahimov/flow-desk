@@ -10,14 +10,18 @@ export function Head() {
     const [products, setProducts] = useState([]);
     useEffect(() => {
         (async () => {
+            console.log('1. BEFORE cookie');
             const cookies = await cookie();
+            console.log('2. AFTER cookie');
             const socket = io(test_prod_url, {
                 withCredentials: true
             });
+            console.log('3. AFTER io()');
             socket.on("connect", async () => {
-                console.log("Connected!");
+                console.log('4. SOCKET CONNECTED');
+                socket.emit('message', 'Helloooouu');
+                console.log("Emit!");
             })
-            socket.emit('message', 'Helloooouu');
             socket.on('response', (msg) => {
                 console.log(msg);
             })
