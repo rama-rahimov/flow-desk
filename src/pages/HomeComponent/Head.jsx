@@ -11,8 +11,8 @@ export function Head() {
     useEffect(() => {
         (async () => {
             console.log('1. BEFORE cookie');
-            // const cookies = await cookie();
-            await cookieClear();
+            const cookies = await cookie();
+            // await cookieClear();
             console.log('2. AFTER cookie');
             const socket = io(test_prod_url, {
                 withCredentials: true
