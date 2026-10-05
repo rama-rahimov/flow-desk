@@ -1,5 +1,5 @@
-const API_URL = 'http://localhost:3000';
-const test_prod_url = 'https://flow-desk-6trh.onrender.com';
+export const API_URL = 'http://localhost:3000';
+export const test_prod_url = 'https://flow-desk-6trh.onrender.com';
 
 export async function register(userData) {
     const response = await fetch(`${test_prod_url}/api/register`, {

@@ -43,7 +43,7 @@ export class ProductEntity {
   product_medias: Relation<ProductMediaEntity>[];
 
   @ManyToOne(() => CompanyEntity, (company) => company.products)
-  company: CompanyEntity;
+  company: Relation<CompanyEntity>
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
