@@ -19,4 +19,13 @@ export class CustomerController {
             massage: 'Client page'
         }
     }
+
+    @Get('clear')
+    clearCookie(@Res({passthrough: true}) res: Response) {
+        res.clearCookie('visitorId');
+
+        return {
+            message: 'Cookie cleared'
+        };
+    }
 }
