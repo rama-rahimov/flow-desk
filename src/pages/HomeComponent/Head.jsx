@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {checkCompany, cookie, findProducts} from "../../api.js";
+import {checkCompany, cookie, findProducts, test_prod_url} from "../../api.js";
 import {useNavigate, useParams} from "react-router-dom";
 import lion from "../../images/justlion.jpg";
 import {io} from "socket.io-client";
@@ -8,15 +8,15 @@ export function Head() {
     const navigate = useNavigate();
     const { companyLink } = useParams();
     const [products, setProducts] = useState([]);
-    const socket = io('http://localhost:5173', {
-        withCredentials: true
-    });
-    socket.emit('message', 'Helloooouu');
-    socket.on('response', (msg) => {
-        console.log(msg);
-    })
     useEffect(() => {
         (async () => {
+            const socket = io(test_prod_url, {
+                withCredentials: true
+            });
+            socket.emit('message', 'Helloooouu');
+            socket.on('response', (msg) => {
+                console.log(msg);
+            })
           const cookies = await cookie();
           const company = await checkCompany(companyLink);
           if(company?.success){

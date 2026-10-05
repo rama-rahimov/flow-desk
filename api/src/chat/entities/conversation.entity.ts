@@ -1,7 +1,8 @@
-import {Entity, ManyToOne, PrimaryGeneratedColumn, Relation} from "typeorm";
+import {Entity, ManyToOne, PrimaryGeneratedColumn, Relation, OneToMany} from "typeorm";
 import {CustomerEntity} from "../../customers/entities/customer.entity.js";
 import {CompanyEntity} from "../../companies/entities/company.entity.js";
 import {UserEntity} from "../../users/entities/user.entity.js";
+import {MessageEntity} from "./message.entity.js";
 
 @Entity('conversation')
 export class ConversationEntity {
@@ -16,4 +17,7 @@ export class ConversationEntity {
 
   @ManyToOne(() => UserEntity, (user: CustomerEntity) => user.conversations)
   user: Relation<CustomerEntity>
+
+  @OneToMany(() => MessageEntity, (message: MessageEntity) => message.conversation)
+  messages: Relation<MessageEntity>
 }
