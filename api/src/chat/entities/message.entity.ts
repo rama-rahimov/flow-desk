@@ -1,6 +1,6 @@
-import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, Relation} from "typeorm";
+import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, Relation, UpdateDateColumn} from "typeorm";
 import {ConversationEntity} from "./conversation.entity.js";
-enum SenderType {
+export enum SenderType {
     CLIENT= 'CLIENT',
     EMPLOYEE= 'EMPLOYEE'
 }
@@ -12,8 +12,8 @@ export class MessageEntity {
     @ManyToOne(() => ConversationEntity, (conversation: ConversationEntity) => conversation.messages)
     conversation: Relation<ConversationEntity>
 
-    @Column({type:"int"})
-    senderId: number;
+    @Column()
+    senderId: string;
 
     @Column({type:"enum", enum: SenderType})
     senderType: SenderType;
@@ -23,4 +23,7 @@ export class MessageEntity {
 
     @CreateDateColumn()
     created_at: Date;
+
+    @UpdateDateColumn()
+    updated_at: Date;
 }
