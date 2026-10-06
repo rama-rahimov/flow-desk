@@ -10,22 +10,18 @@ export function Head() {
     const [products, setProducts] = useState([]);
     useEffect(() => {
         (async () => {
-            console.log('1. BEFORE cookie');
             const cookies = await cookie();
             // await cookieClear();
-            console.log('2. AFTER cookie');
             const socket = io(test_prod_url, {
                 withCredentials: true
             });
-            console.log('3. AFTER io()');
             socket.on("connect", async () => {
-                console.log('4. SOCKET CONNECTED');
                 socket.emit('message', 'Helloooouu');
                 console.log("Emit!");
-            })
+            });
             socket.on('response', (msg) => {
                 console.log(msg);
-            })
+            });
           const company = await checkCompany(companyLink);
           if(company?.success){
               const getProducts = await findProducts(company.data.id);
@@ -35,7 +31,6 @@ export function Head() {
           }
         })()
     },[]);
-    console.log({products});
     return (
         <div className="client-page">
             <header className="client-header">
