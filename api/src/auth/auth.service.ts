@@ -85,10 +85,8 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-      const customer = await this.customerDB.findOneBy({
-        email: loginDto.email,
-      });
-      const user = await this.userDB.findOneBy({ email: loginDto.email });
+      const customer = await this.customerDB.findOneBy({email: loginDto.email});
+      const user = await this.userDB.findOneBy({email: loginDto.email});
       const result = customer ?? user;
       if (!result?.id) {
         throw new UnauthorizedException('Invalid email or password!');

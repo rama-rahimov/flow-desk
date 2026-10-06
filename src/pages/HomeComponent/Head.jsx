@@ -18,10 +18,10 @@ export function Head() {
             socket.on("connect", async () => {
                 socket.emit('message', 'Helloooouu');
                 console.log("Emit!");
-            })
+            });
             socket.on('response', (msg) => {
                 console.log(msg);
-            })
+            });
           const company = await checkCompany(companyLink);
           if(company?.success){
               const getProducts = await findProducts(company.data.id);
