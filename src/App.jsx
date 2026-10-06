@@ -21,6 +21,7 @@ import Employees from "./pages/Employees/Employees.jsx";
 import Payment from "./pages/PaymentComponents/Payment.jsx";
 import ProfileRamiz from "./pages/Profile/RamizProfile.jsx";
 import {Head} from "./pages/HomeComponent/Head.jsx";
+import Chat from "./pages/Chat/Chat.jsx";
 
 function AppContent() {
     const navigate = useNavigate();
@@ -49,6 +50,7 @@ function AppContent() {
             <Route path="/:companyLink/payment" element={<Payment />}/>
             <Route path='/:companyLink/employees' element={<Employees />} />
             <Route path="/:companyLink/login" element={<Login />}/>
+            <Route path="/:companyLink/chat" element={<Chat />}/>
             <Route path="/:companyLink/profile" element={<Profile />}/>
             <Route path="/:companyLink/head" element={<Head />} />
             <Route path="/:companyLink/profile_ramiz" element={<ProfileRamiz />}/>
