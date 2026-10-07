@@ -22,7 +22,7 @@ dotenv.config();
     PaymentsModule,
     ProductModule,
     ImageModule,
-    // ChatModule,
+    ChatModule,
     CustomerModule,
     DealModule,
     ConfigModule.forRoot({ isGlobal: true }),
