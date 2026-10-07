@@ -42,6 +42,9 @@ export function Head() {
                     <a href="#about">About</a>
                     <a href="#contact">Contact</a>
                 </nav>
+                <button className="login-button" onClick={() => navigate(`/${companyLink}/chat`)}>
+                    Chat
+                </button>
                 <button className="login-button" onClick={() => navigate(`/${companyLink}/register`)}>
                     Register
                 </button>

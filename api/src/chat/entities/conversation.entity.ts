@@ -30,6 +30,6 @@ export class ConversationEntity {
   @OneToMany(() => MessageEntity, (message: MessageEntity) => message.conversation)
   messages: Relation<MessageEntity>;
 
-  @Column({type: 'uuid', nullable: true,})
+  @Column({type: 'uuid', nullable: true})
   clientId: string | null;
 }

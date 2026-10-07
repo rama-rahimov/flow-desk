@@ -1,6 +1,8 @@
 import {ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer} from "@nestjs/websockets";
 import {Server, Socket} from "socket.io";
 import {parse} from "cookie";
+import {ChatService} from "./chat.service.js";
+import {MessageDto} from "./dto/message.dto.js";
 
 @WebSocketGateway({
     cors:{
@@ -9,6 +11,7 @@ import {parse} from "cookie";
     }
 })
 export class EventsGateway {
+    constructor(private readonly chatService:ChatService) {}
     @WebSocketServer()
     server: Server;
 
@@ -20,9 +23,9 @@ export class EventsGateway {
         console.log('Connected:', visitorId);
     }
 
-    @SubscribeMessage('message')
-    handleEvent(@MessageBody() data:string, @ConnectedSocket() client:Socket):string{
-       client.emit('response',data);
-       return 'ok';
+   @SubscribeMessage('message')
+   async handleEvent(@MessageBody() data:MessageDto, @ConnectedSocket() client:Socket){
+      const result = await this.chatService.messageHandler({...data, visitorId: client.data.visitorId});
+      client.to(String(result.conversationId)).emit('message',result);
     }
 }
