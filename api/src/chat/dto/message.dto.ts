@@ -8,7 +8,8 @@ export class MessageDto {
     @IsString()
     message: string;
     @IsNotEmpty()
-    senderId: string;
+    senderId: string|null;
+    visitorId: string;
     conversationId: number|null;
     @IsNotEmpty()
     @IsInt()
