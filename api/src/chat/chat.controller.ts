@@ -9,7 +9,7 @@ export class ChatController {
     @UseGuards(AuthGuard)
     @Get('client/messages')
     getAllMessages(@Req() req:Request, @Query('companyLink') companyLink: string, @Query('senderId') senderId: string) {
-        const visitorId = req.cookies.visitorId;
+      const visitorId = req.cookies.visitorId;
       return this.chatService.getAllMessages(companyLink, Number(senderId), visitorId);
     }
 }
