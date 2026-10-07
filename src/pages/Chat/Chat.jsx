@@ -22,7 +22,7 @@ export default function Chat() {
             });
         })()
     },[messages]);
-    socket.on("message", async (data) => {
+    socket.on("message",  (data) => {
         console.log('messageEvent',data)
         setMessages((prev) => [...prev, {roleId: data.roleId, msg: data.msg}]);
     })
