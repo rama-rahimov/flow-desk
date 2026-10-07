@@ -12,7 +12,7 @@ import dotenv from 'dotenv';
 import {ProductModule} from "./product/product.module.js";
 import {ImageModule} from "./images/image.module.js";
 import {CustomerModule} from "./customers/customer.module.js";
-import {ChatServiceModule} from "./chat/chat.module.js";
+import {ChatModule} from "./chat/chat.module.js";
 dotenv.config();
 
 @Module({
@@ -22,7 +22,7 @@ dotenv.config();
     PaymentsModule,
     ProductModule,
     ImageModule,
-    ChatServiceModule,
+    // ChatModule,
     CustomerModule,
     DealModule,
     ConfigModule.forRoot({ isGlobal: true }),
