@@ -26,6 +26,7 @@ export class EventsGateway {
        console.log({data});
       const result = await this.chatService.messageHandler({...data, visitorId: client.data.visitorId});
        console.log({result});
+       client.join(String(result.conversationId));
       this.server.to(String(result.conversationId)).emit('message',result);
     }
 }
