@@ -16,16 +16,16 @@ export class EventsGateway {
     server: Server;
 
     handleConnection(client: Socket) {
-        console.log("taakk", client.handshake.headers.cookie, client.handshake.headers);
         const cookies = parse(client.handshake.headers.cookie ?? '');
         const visitorId = cookies.visitorId;
         client.data.visitorId = visitorId;
-        console.log('Connected:', visitorId);
     }
 
    @SubscribeMessage('message')
    async handleEvent(@MessageBody() data:MessageDto, @ConnectedSocket() client:Socket){
+       console.log({data});
       const result = await this.chatService.messageHandler({...data, visitorId: client.data.visitorId});
+       console.log({result});
       client.to(String(result.conversationId)).emit('message',result);
     }
 }
