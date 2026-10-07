@@ -10,7 +10,7 @@ import {ChatController} from "./chat.controller.js";
 
 @Module({
     imports: [TypeOrmModule.forFeature([ConversationEntity, MessageEntity, CustomerEntity, CompanyEntity])],
-    providers: [/*ChatService,*/ EventsGateway],
+    providers: [/*ChatService, EventsGateway*/],
     controllers: [ChatController],
 })
 export class ChatModule {}
