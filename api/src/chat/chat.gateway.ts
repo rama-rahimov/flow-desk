@@ -25,8 +25,7 @@ export class EventsGateway {
 
    @SubscribeMessage('message')
    async handleEvent(@MessageBody() data:MessageDto, @ConnectedSocket() client:Socket){
-      // const result = await this.chatService.messageHandler({...data, visitorId: client.data.visitorId});
-      // client.to(String(result.conversationId)).emit('message',result);
-       console.log(data);
+      const result = await this.chatService.messageHandler({...data, visitorId: client.data.visitorId});
+      client.to(String(result.conversationId)).emit('message',result);
     }
 }

@@ -1,16 +1,18 @@
 import './Chat.css';
 import {useEffect, useState} from "react";
-import {cookie, test_prod_url} from "../../api.js";
+import {test_prod_url} from "../../api.js";
 import {io} from "socket.io-client";
 import {useParams} from "react-router-dom";
 export default function Chat() {
     const {companyLink} = useParams();
     const [messages, setMessages] = useState([]);
+    const [msg, setMsg] = useState('');
     const socket = io(test_prod_url, {
         withCredentials: true
     });
     function handlerMessage(e,message){
         e.preventDefault();
+        console.log("message", message);
         socket.emit("message", {companyLink, message});
     }
     useEffect(() => {
@@ -21,6 +23,7 @@ export default function Chat() {
         })()
     },[messages]);
     socket.on("message", async (data) => {
+        console.log('messageEvent',data)
         setMessages((prev) => [...prev, {roleId: data.roleId, msg: data.msg}]);
     })
     return (
@@ -37,9 +40,10 @@ export default function Chat() {
                 <input
                     type="text"
                     placeholder="Write a message..."
-                    onChange={(e) => {handlerMessage(e, e.target.value)}}
+                    value={msg}
+                    onChange={(e) => setMsg(e.target.value)}
                 />
-                <button>Send</button>
+                <button onClick={(e) => handlerMessage(e, msg)}>Send</button>
             </div>
         </div>
     )
