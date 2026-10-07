@@ -34,7 +34,9 @@ constructor(@InjectRepository(ConversationEntity) private  readonly conversation
            }else {
                obj['clientId'] = data.visitorId;
            }
+           console.log({obj, data});
            const conversation = await this.conversationDB.findOneBy({company:{link:data.companyLink},...obj});
+           console.log({conversation});
            if(conversation?.id){
                const messageObj = this.messageDB.create({
                    conversation:{id:conversation.id},
@@ -47,7 +49,7 @@ constructor(@InjectRepository(ConversationEntity) private  readonly conversation
            }else {
                const company = await this.companyDB.findOneBy({link:data.companyLink});
                const createConversation = this.conversationDB.create({
-                   clientId:data.senderId,
+                   clientId:data.senderId||data.visitorId,
                    company:{id:company?.id}
                });
                const conversation = await this.conversationDB.save(createConversation);
@@ -55,7 +57,7 @@ constructor(@InjectRepository(ConversationEntity) private  readonly conversation
                    conversation:{id:createConversation.id},
                    senderId:data.senderId||data.visitorId,
                    senderType: SenderType.CLIENT,
-                   message: data.message
+                   message: data.message,
                });
                await this.messageDB.save(messageObj);
                return {roleId: 0, msg: data.message, conversationId: conversation.id};

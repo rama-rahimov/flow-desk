@@ -21,7 +21,7 @@ export default function Chat() {
                 console.log("Emit!");
             });
         })()
-    },[messages]);
+    },[]);
     socket.on("message",  (data) => {
         console.log('messageEvent',data)
         setMessages((prev) => [...prev, {roleId: data.roleId, msg: data.msg}]);
