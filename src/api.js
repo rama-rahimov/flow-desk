@@ -230,3 +230,10 @@ export async function cookieClear() {
     });
     return response.json();
 }
+
+export async function getAllMessages(link, senderId) {
+    const response = await fetch(`${test_prod_url}/api/chat/client/messages?companyLink=${link}&senderId=${senderId}`, {
+        method: 'GET', credentials:'include'
+    });
+    return response.json();
+}
