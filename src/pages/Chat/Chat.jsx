@@ -1,6 +1,6 @@
 import './Chat.css';
 import {useEffect, useState} from "react";
-import {test_prod_url} from "../../api.js";
+import {getAllMessages, test_prod_url} from "../../api.js";
 import {io} from "socket.io-client";
 import {useParams} from "react-router-dom";
 export default function Chat() {
@@ -20,6 +20,10 @@ export default function Chat() {
             socket.on("connect", async () => {
                 console.log("Emit!");
             });
+            const messages = await getAllMessages(companyLink);
+            if (messages.length > 0) {
+                setMessages(messages);
+            }
         })()
     },[]);
     socket.on("message",  (data) => {
