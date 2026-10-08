@@ -76,7 +76,7 @@ constructor(@InjectRepository(ConversationEntity) private  readonly conversation
     if(conversation?.id){
         const messages = await this.messageDB.find({where:{conversation:{id:conversation?.id}}});
         console.log({messages});
-        return {data:messages};
+        return {data: messages.map(el => ({role_id:SenderType.EMPLOYEE === el.senderType, msg: el.message}))};
     }else {
         return {data:[]};
     }
