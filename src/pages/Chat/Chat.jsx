@@ -21,8 +21,9 @@ export default function Chat() {
                 console.log("Emit!");
             });
             const messages = await getAllMessages(companyLink);
-            if (messages.length > 0) {
-                setMessages(messages);
+            console.log({messages});
+            if (messages?.data.length > 0) {
+                setMessages(messages.data);
             }
         })()
     },[]);
