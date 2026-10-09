@@ -16,21 +16,28 @@ export default function Chat() {
         socket.emit("message", {companyLink, message});
     }
     useEffect(() => {
+        const handleMessage = (data) => {
+            console.log('messageEvent',data)
+            setMessages((prev) => [...prev, {roleId: data.roleId, msg: data.msg}]);
+        };
+        const handleConnect = () => {
+            console.log("Connected!", socket.id);
+        }
+        socket.on("connect",  handleConnect);
+        socket.on("message",  handleMessage);
         (async () => {
-            socket.on("connect", async () => {
-                console.log("Emit!");
-            });
             const messages = await getAllMessages(companyLink);
             console.log({messages});
             if (messages?.data.length > 0) {
                 setMessages(messages.data);
             }
         })()
+        return () => {
+            socket.off("message", handleMessage);
+            socket.off("connect", ()=> {
+                console.log('disconnected')});
+        }
     },[]);
-    socket.on("message",  (data) => {
-        console.log('messageEvent',data)
-        setMessages((prev) => [...prev, {roleId: data.roleId, msg: data.msg}]);
-    })
     return (
         <div className="chat">
             <div className="chat__header">

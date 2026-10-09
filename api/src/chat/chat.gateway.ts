@@ -27,6 +27,9 @@ export class EventsGateway {
       const result = await this.chatService.messageHandler({...data, visitorId: client.data.visitorId});
        console.log({result});
        client.join(String(result.conversationId));
+       console.log('ROOM EXISTS:', this.server.sockets.adapter.rooms.has(String(result.conversationId)));
+       console.log('ROOM CLIENTS:', this.server.sockets.adapter.rooms.get(String(result.conversationId))?.size);
       this.server.to(String(result.conversationId)).emit('message',result);
+       console.log("Emmmit");
     }
 }
