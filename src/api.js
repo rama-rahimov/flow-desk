@@ -231,8 +231,14 @@ export async function cookieClear() {
     return response.json();
 }
 
-export async function getAllMessages(link, senderId) {
-    const response = await fetch(`${test_prod_url}/api/chat/client/messages?companyLink=${link}&senderId=${senderId}`, {
+export async function getAllMessages(link, senderId, conversationId) {
+    let query = ``;
+    if(conversationId){
+     query += `conversationId=${conversationId}`;
+    }else {
+     query += `companyLink=${link}&senderId=${senderId}`;
+    }
+    const response = await fetch(`${test_prod_url}/api/chat/client/messages?${query}`, {
         method: 'GET', credentials:'include'
     });
     return response.json();

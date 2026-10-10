@@ -1,6 +1,6 @@
 import './Chat.css';
 import {useEffect, useRef, useState} from "react";
-import {getAllConversations, getAllMessages, test_prod_url} from "../../api.js";
+import {currentUser, getAllConversations, getAllMessages, getEmployees, test_prod_url} from "../../api.js";
 import {io} from "socket.io-client";
 import {useParams} from "react-router-dom";
 export default function Chat() {
@@ -8,7 +8,19 @@ export default function Chat() {
     const [messages, setMessages] = useState([]);
     const [conversations, setConversations] = useState([]);
     const [msg, setMsg] = useState('');
+    const [name, setName] = useState('');
+    const [user, setUser] = useState({});
+    const [allEmployees, setAllEmployees] = useState([]);
     const socketRef = useRef(null);
+    const [isOpen, setIsOpen] = useState(false);
+    function getConvMessage(e, messages, name){
+        e.preventDefault();
+        setMessages(messages.map(el=>({role_id: el.senderType==='CLIENT', msg:el.message})));
+        setName(name);
+    }
+    function setSelectedUser(user){
+
+    }
     function handlerMessage(e,message){
         e.preventDefault();
         if (!message.trim()) return;
@@ -43,11 +55,20 @@ export default function Chat() {
         })
         socketRef.current = socket;
         (async () => {
-            const messages = await getAllMessages(companyLink);
-            const convers = await getAllConversations(companyLink);
-            setConversations(convers);
-            setMessages(messages.data);
-        })()
+            const profile = await currentUser();
+            setUser(profile??{role_id:3});
+            if(profile.role_id !== 3){
+                const convers = await getAllConversations(companyLink);
+                setConversations(convers);
+                if(profile.role_id === 1){
+                 const employees = await getEmployees();
+                 setAllEmployees(employees);
+                }
+            }else {
+                const messages = await getAllMessages('', '', companyLink);
+                setMessages(messages.data);
+            }
+        })();
         return () => {
             socket.off('connect');
             socket.off('connect_error');
@@ -55,37 +76,38 @@ export default function Chat() {
             socket.disconnect();
             socketRef.current = null;
         }
-    },[])
+    },[]);
+    console.log({ isOpen });
     return (
 <div className="chat-layout">
+    {user.role_id !== 3 ?
     <aside className="chat-sidebar">
         <div className="chat-sidebar__header">
             <h2>Chats</h2>
             <input type="text" placeholder="Search chats..." />
         </div>
-
         <div className="chat-list">
-            {conversations.map(el => (<div className="chat-item chat-item--active">
+            {conversations.map((el, index) => (<div className="chat-item chat-item--active" key={index} onClick={(e) => getConvMessage(e, el.messages, `${el.customer?`${el.customer.firstName} ${el.customer.lastName}`:`Guest-${el.clientId.slice(0,5)}`}`)}>
                 <div className="chat-item__avatar"></div>
                 <div className="chat-item__info">
-                    <h3>{el.customer?el.customer.firstName:`Guest-${el.clientId.slice(0,5)}`}</h3>
-                    {/*<p>Hello, I need help...</p>*/}
+                    <h3>{el.customer?`${el.customer.firstName} ${el.customer.lastName}`:`Guest-${el.clientId.slice(0,5)}`}</h3>
+                    {<p>{String(el.messages.at(-1).message).length>12?`${String(el.messages.at(-1).message)}...`:el.messages.at(-1).message}</p>}
                 </div>
             </div>))}
         </div>
-    </aside>
+    </aside>:''}
     <section className="chat">
         <div className="chat__header">
-            <h2>Alex Johnson</h2>
+            <h2>{name}</h2>
         </div>
         <div className="chat__messages">
-            {messages.map((el) => (
-                <div className={`message message--${el.role_id ? 'employee' : 'client'}`} key={el.id}>
+            {messages.map((el,index) => (
+                <div className={`message message--${user.role_id !== 3 && el.role_id ? 'employee' : 'client'}`} key={index}>
                     {el.msg}
                 </div>
             ))}
         </div>
-        <div className="chat__input">
+        {name?<div className="chat__input">
             <input
                 type="text"
                 placeholder="Write a message..."
@@ -95,7 +117,42 @@ export default function Chat() {
             <button onClick={(e) => handlerMessage(e, msg)}>
                 Send
             </button>
-        </div>
+            <button onClick={(e) => setIsOpen(true)}>
+                Permission
+            </button>
+            {isOpen && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <button
+                            className="modal__close"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            ×
+                        </button>
+
+                        <h2>Select one of the employees for give him permission</h2>
+                        {
+                            allEmployees.map((el, index) => (<div className="user-list">
+                                    <div
+                                        className="user-item"
+                                        key={index}
+                                        onClick={() => setSelectedUser(el)}
+                                    >
+                                        <div className="user-item__avatar">
+                                            {el.firstName.charAt(0).toUpperCase()}
+                                        </div>
+
+                                        <div className="user-item__info">
+                                            <h3>{el.firstName}</h3>
+                                            <p>{el.email}</p>
+                                        </div>
+                                    </div>
+                            </div>))
+                        }
+                    </div>
+                </div>
+            )}
+        </div>:''}
     </section>
 
 </div>)

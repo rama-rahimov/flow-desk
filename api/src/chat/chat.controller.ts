@@ -1,4 +1,4 @@
-import {Controller, Get, Param, Query, Req} from "@nestjs/common";
+import {Controller, Get, Param, ParseIntPipe, Query, Req} from "@nestjs/common";
 import {ChatService} from "./chat.service.js";
 import type {Request} from 'express';
 
@@ -14,5 +14,10 @@ export class ChatController {
     @Get('admin/conversations/:companyLink')
     getAllConversations(@Param('companyLink') companyLink: string) {
         return this.chatService.getAllConversations(companyLink);
+    }
+    @Get('admin/conversations/user/:userId/:conversationId')
+    updateConversationUser(@Param('userId', ParseIntPipe) userId: number,
+       @Param('conversationId', ParseIntPipe) conversationId: number) {
+       return this.chatService.updateConversationUser(userId, conversationId);
     }
 }
