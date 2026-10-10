@@ -1,13 +1,16 @@
 import {ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer} from "@nestjs/websockets";
 import {Server, Socket} from "socket.io";
 import {parse} from "cookie";
+import 'dotenv/config';
+import jwt from "jsonwebtoken";
 import {ChatService} from "./chat.service.js";
 import {MessageDto} from "./dto/message.dto.js";
+import * as process from "node:process";
 
 @WebSocketGateway({
     cors:{
         origin:'http://localhost:5173',
-        credentials:true
+        credentials:true,
     }
 })
 export class EventsGateway {
@@ -15,10 +18,15 @@ export class EventsGateway {
     @WebSocketServer()
     server: Server;
 
-    handleConnection(client: Socket) {
+   async handleConnection(client: Socket) {
         const cookies = parse(client.handshake.headers.cookie ?? '');
-        const visitorId = cookies.visitorId;
-        client.data.visitorId = visitorId;
+        const token = client.handshake.auth.token;
+       console.log({token, jwt: process.env.JWT_SECRET});
+       if (typeof token === 'string' && process.env.JWT_SECRET) {
+         const data = jwt.verify(token, process.env.JWT_SECRET);
+         client.data.senderId = data.sub;
+       }
+       client.data.visitorId = cookies.visitorId;
     }
 
    @SubscribeMessage('message')

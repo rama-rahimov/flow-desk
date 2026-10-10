@@ -237,3 +237,9 @@ export async function getAllMessages(link, senderId) {
     });
     return response.json();
 }
+export async function getAllConversations(link) {
+    const response = await fetch(`${test_prod_url}/api/chat/admin/conversations/${link}`, {
+        method: 'GET', credentials:'include'
+    });
+    return response.json();
+}
