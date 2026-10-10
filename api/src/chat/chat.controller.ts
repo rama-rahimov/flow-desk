@@ -1,4 +1,4 @@
-import {Controller, Get, Query, Req} from "@nestjs/common";
+import {Controller, Get, Param, Query, Req} from "@nestjs/common";
 import {ChatService} from "./chat.service.js";
 import type {Request} from 'express';
 
@@ -9,5 +9,9 @@ export class ChatController {
     getAllMessages(@Req() req:Request, @Query('companyLink') companyLink: string, @Query('senderId') senderId: string) {
       const visitorId = req.cookies.visitorId;
       return this.chatService.getAllMessages(companyLink, Number(senderId), visitorId);
+    }
+    @Get('admin/conversations/:companyLink')
+    getAllConversations(@Param('companyLink') companyLink: string) {
+        return this.chatService.getAllConversations(companyLink);
     }
 }

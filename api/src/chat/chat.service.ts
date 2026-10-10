@@ -45,7 +45,7 @@ constructor(@InjectRepository(ConversationEntity) private  readonly conversation
                    message: data.message
                });
                await this.messageDB.save(messageObj);
-               return {roleId:0, msg: data.message, conversationId: conversation.id};
+               return {role_id:0, msg: data.message, conversationId: conversation.id};
            }else {
                const company = await this.companyDB.findOneBy({link:data.companyLink});
                const createConversation = this.conversationDB.create({
@@ -60,7 +60,7 @@ constructor(@InjectRepository(ConversationEntity) private  readonly conversation
                    message: data.message,
                });
                await this.messageDB.save(messageObj);
-               return {roleId: 0, msg: data.message, conversationId: conversation.id};
+               return {role_id: 0, msg: data.message, conversationId: conversation.id};
            }
        }
     }
@@ -80,5 +80,9 @@ constructor(@InjectRepository(ConversationEntity) private  readonly conversation
     }else {
         return {data:[]};
     }
-}
+   }
+
+   async getAllConversations(link:string) {
+    return await this.conversationDB.find({where:{company:{link}}});
+   }
 }
