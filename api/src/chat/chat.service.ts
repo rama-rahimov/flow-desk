@@ -22,7 +22,7 @@ constructor(@InjectRepository(ConversationEntity) private  readonly conversation
                message: data.message
            });
            await this.messageDB.save(messageObj);
-           return {roleId:1, msg: data.message, conversationId: data.conversationId};
+           return {role_id:1, msg: data.message, conversationId: data.conversationId};
        }else {
            const obj = {};
            if(data.senderId){
@@ -65,25 +65,31 @@ constructor(@InjectRepository(ConversationEntity) private  readonly conversation
        }
     }
 
-    async getAllMessages(link:string, senderId:number, visitorId:string) {
-    const obj = {company:{link}};
-    if(senderId){
-        obj['customer'] = {id:senderId};
-    }else {
-        obj['clientId'] = visitorId;
+    async getAllMessages(link:string, senderId:number, visitorId:string, conversationId:number) {
+        if (conversationId) {
+            const messages = await this.messageDB.find({where: {conversation: {id: conversationId}}});
+            console.log({messages});
+            return {data: messages.map(el => ({role_id: SenderType.EMPLOYEE === el.senderType, msg: el.message}))};
+        } else {
+            const obj = {company: {link}};
+            if (senderId) {
+                obj['customer'] = {id: senderId};
+            } else {
+                obj['clientId'] = visitorId;
+            }
+            const conversation = await this.conversationDB.findOneBy(obj);
+            if (conversation?.id) {
+                const messages = await this.messageDB.find({where: {conversation: {id: conversation?.id}}});
+                console.log({messages});
+                return {data: messages.map(el => ({role_id: SenderType.EMPLOYEE === el.senderType, msg: el.message}))};
+            } else {
+                return {data: []};
+            }
+        }
     }
-    const conversation = await this.conversationDB.findOneBy(obj);
-    if(conversation?.id){
-        const messages = await this.messageDB.find({where:{conversation:{id:conversation?.id}}});
-        console.log({messages});
-        return {data: messages.map(el => ({role_id:SenderType.EMPLOYEE === el.senderType, msg: el.message}))};
-    }else {
-        return {data:[]};
-    }
-   }
 
    async getAllConversations(link:string) {
     return await this.conversationDB.find({where:{company:{link}}, select:{customer:{firstName:true, lastName:true},
-     clientId:true, user:{firstName:true, lastName:true}}, relations:['customer', 'user']});
+     clientId:true, user:{firstName:true, lastName:true}, messages:{senderType:true,message:true}}, relations:['customer', 'user', 'messages']});
    }
 }
