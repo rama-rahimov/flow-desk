@@ -65,13 +65,13 @@ export default function Chat() {
         </div>
 
         <div className="chat-list">
-            <div className="chat-item chat-item--active">
-                <div className="chat-item__avatar">A</div>
+            {conversations.map(el => (<div className="chat-item chat-item--active">
+                <div className="chat-item__avatar"></div>
                 <div className="chat-item__info">
-                    <h3>Alex Johnson</h3>
+                    <h3>{el.customer?el.customer.firstName:`Guest-${el.clientId.slice(0,5)}`}</h3>
                     {/*<p>Hello, I need help...</p>*/}
                 </div>
-            </div>
+            </div>))}
         </div>
     </aside>
     <section className="chat">
