@@ -14,6 +14,7 @@ constructor(@InjectRepository(ConversationEntity) private  readonly conversation
    @InjectRepository(CustomerEntity) private readonly customerDB: Repository<CustomerEntity>,
    @InjectRepository(CompanyEntity) private readonly companyDB: Repository<CompanyEntity>) {}
     async messageHandler(data:MessageDto){
+        console.log({data});
        if(data.conversationId && data.senderId){
            const messageObj = this.messageDB.create({
                conversation:{id:data.conversationId},
