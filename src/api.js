@@ -255,3 +255,14 @@ export async function givePermission(userId, conversationId) {
     });
     return response.json();
 }
+
+export async function getConversation(userId, conversationId) {
+    let query = ``;
+    if(conversationId){
+
+    }
+    const response = await fetch(`${test_prod_url}/api/chat/admin/conversations/user/${userId}/${conversationId}`, {
+        method: 'GET', credentials:'include'
+    });
+    return response.json();
+}
