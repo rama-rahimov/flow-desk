@@ -1,25 +1,44 @@
 import './Chat.css';
 import {useEffect, useRef, useState} from "react";
-import {currentUser, getAllConversations, getAllMessages, getEmployees, test_prod_url} from "../../api.js";
+import {
+    currentUser,
+    getAllConversations,
+    getAllMessages,
+    getEmployees,
+    givePermission,
+    test_prod_url
+} from "../../api.js";
 import {io} from "socket.io-client";
 import {useParams} from "react-router-dom";
 export default function Chat() {
     const {companyLink} = useParams();
     const [messages, setMessages] = useState([]);
     const [conversations, setConversations] = useState([]);
+    const [selectedConv, setSelectedConv] = useState({});
     const [msg, setMsg] = useState('');
     const [name, setName] = useState('');
+    const [perm, setPerm] = useState(true);
     const [user, setUser] = useState({});
     const [allEmployees, setAllEmployees] = useState([]);
     const socketRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
-    function getConvMessage(e, messages, name){
+    async function getConvMessage(e, messages, name, conv){
         e.preventDefault();
         setMessages(messages.map(el=>({role_id: el.senderType==='CLIENT', msg:el.message})));
         setName(name);
+        setSelectedConv(conv);
+        const permission = await givePermission(user.id, conv.id);
+        if(permission.success){
+            setPerm(false);
+        }
     }
-    function setSelectedUser(user){
-
+    async function setSelectedUser(e,employee){
+     e.preventDefault();
+     console.log({employee, conversations, setSelectedConv});
+     const permission = await givePermission(employee.id, selectedConv.id);
+     if(permission.success){
+       setPerm(false);
+     }
     }
     function handlerMessage(e,message){
         e.preventDefault();
@@ -77,7 +96,7 @@ export default function Chat() {
             socketRef.current = null;
         }
     },[]);
-    console.log({ isOpen });
+    console.log({ isOpen, conversations });
     return (
 <div className="chat-layout">
     {user.role_id !== 3 ?
@@ -87,7 +106,7 @@ export default function Chat() {
             <input type="text" placeholder="Search chats..." />
         </div>
         <div className="chat-list">
-            {conversations.map((el, index) => (<div className="chat-item chat-item--active" key={index} onClick={(e) => getConvMessage(e, el.messages, `${el.customer?`${el.customer.firstName} ${el.customer.lastName}`:`Guest-${el.clientId.slice(0,5)}`}`)}>
+            {conversations.map((el, index) => (<div className="chat-item chat-item--active" key={index} onClick={(e) => getConvMessage(e, el.messages, `${el.customer?`${el.customer.firstName} ${el.customer.lastName}`:`Guest-${el.clientId.slice(0,5)}`}`, el)}>
                 <div className="chat-item__avatar"></div>
                 <div className="chat-item__info">
                     <h3>{el.customer?`${el.customer.firstName} ${el.customer.lastName}`:`Guest-${el.clientId.slice(0,5)}`}</h3>
@@ -109,12 +128,12 @@ export default function Chat() {
         </div>
         {name?<div className="chat__input">
             <input
-                type="text"
+                type="text" disabled={perm}
                 placeholder="Write a message..."
                 value={msg}
                 onChange={(e) => setMsg(e.target.value)}
             />
-            <button onClick={(e) => handlerMessage(e, msg)}>
+            <button disabled={perm} onClick={(e) => handlerMessage(e, msg)}>
                 Send
             </button>
             <button onClick={(e) => setIsOpen(true)}>
@@ -129,19 +148,17 @@ export default function Chat() {
                         >
                             ×
                         </button>
-
                         <h2>Select one of the employees for give him permission</h2>
                         {
                             allEmployees.map((el, index) => (<div className="user-list">
                                     <div
                                         className="user-item"
                                         key={index}
-                                        onClick={() => setSelectedUser(el)}
+                                        onClick={(e) => setSelectedUser(e,el,index)}
                                     >
                                         <div className="user-item__avatar">
                                             {el.firstName.charAt(0).toUpperCase()}
                                         </div>
-
                                         <div className="user-item__info">
                                             <h3>{el.firstName}</h3>
                                             <p>{el.email}</p>
