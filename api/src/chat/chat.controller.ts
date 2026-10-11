@@ -15,7 +15,7 @@ export class ChatController {
     getAllConversations(@Param('companyLink') companyLink: string) {
         return this.chatService.getAllConversations(companyLink);
     }
-    @Get('admin/conversations/')
+    @Get('client/conversations')
     getConversation(@Req() req:Request, @Query('companyLink') companyLink: string, @Query('senderId', ParseIntPipe) senderId: string) {
         const visitorId = req.cookies.visitorId;
         return this.chatService.getConversation(companyLink, senderId, visitorId);
