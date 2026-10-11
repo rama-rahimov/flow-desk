@@ -13,7 +13,12 @@ export class ChatController {
     }
     @Get('admin/conversations/:companyLink')
     getAllConversations(@Param('companyLink') companyLink: string) {
-      return this.chatService.getAllConversations(companyLink);
+        return this.chatService.getAllConversations(companyLink);
+    }
+    @Get('admin/conversations/')
+    getConversation(@Req() req:Request, @Query('companyLink') companyLink: string, @Query('senderId') senderId: string) {
+        const visitorId = req.cookies.visitorId;
+        return this.chatService.getConversation(companyLink, senderId, visitorId);
     }
     @Get('admin/conversations/user/:userId/:conversationId')
     updateConversationUser(@Param('userId', ParseIntPipe) userId: number,
