@@ -27,8 +27,9 @@ export default function Chat() {
         setMessages(messages.map(el=>({role_id: el.senderType==='CLIENT', msg:el.message})));
         setName(name);
         setSelectedConv(conv);
-        const permission = await givePermission(user.id, conv.id);
-        if(permission.success){
+        console.log({conv,user})
+        if(conv.user.id === user.id){
+            console.log('permm');
             setPerm(false);
         }
     }
@@ -37,15 +38,21 @@ export default function Chat() {
      console.log({employee, conversations, setSelectedConv});
      const permission = await givePermission(employee.id, selectedConv.id);
      if(permission.success){
-       setPerm(false);
+         if(employee.id === user.id){
+             console.log('permm');
+             setPerm(false);
+         }else {
+             setPerm(true)
+         }
      }
+     setIsOpen(false);
     }
     function handlerMessage(e,message){
         e.preventDefault();
         if (!message.trim()) return;
         if (socketRef.current && socketRef.current.connected) {
             console.log("message", message);
-            socketRef.current.emit('message',{companyLink, message, roleId:0});
+            socketRef.current.emit('message',{companyLink, message, conversationId: selectedConv.id});
             setMsg('');
         }else {
             console.error("Сокет не подключен!");
@@ -98,7 +105,7 @@ export default function Chat() {
     },[]);
     console.log({ isOpen, conversations });
     return (
-<div className="chat-layout">
+   <div className="chat-layout">
     {user.role_id !== 3 ?
     <aside className="chat-sidebar">
         <div className="chat-sidebar__header">
@@ -106,7 +113,9 @@ export default function Chat() {
             <input type="text" placeholder="Search chats..." />
         </div>
         <div className="chat-list">
-            {conversations.map((el, index) => (<div className="chat-item chat-item--active" key={index} onClick={(e) => getConvMessage(e, el.messages, `${el.customer?`${el.customer.firstName} ${el.customer.lastName}`:`Guest-${el.clientId.slice(0,5)}`}`, el)}>
+            {conversations.map((el, index) => (<div className="chat-item chat-item--active" key={index}
+             onClick={(e) => getConvMessage(e, el.messages,
+             `${el.customer?`${el.customer.firstName} ${el.customer.lastName}`:`Guest-${el.clientId.slice(0,5)}`}`, el)}>
                 <div className="chat-item__avatar"></div>
                 <div className="chat-item__info">
                     <h3>{el.customer?`${el.customer.firstName} ${el.customer.lastName}`:`Guest-${el.clientId.slice(0,5)}`}</h3>
