@@ -50,8 +50,9 @@ export default function Chat() {
     function handlerMessage(e,message){
         e.preventDefault();
         if (!message.trim()) return;
+
         if (socketRef.current && socketRef.current.connected) {
-            console.log("message", message);
+            console.log("message", message, selectedConv.id);
             socketRef.current.emit('message',{companyLink, message, conversationId: selectedConv.id});
             setMsg('');
         }else {
