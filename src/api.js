@@ -256,12 +256,8 @@ export async function givePermission(userId, conversationId) {
     return response.json();
 }
 
-export async function getConversation(userId, conversationId) {
-    let query = ``;
-    if(conversationId){
-
-    }
-    const response = await fetch(`${test_prod_url}/api/chat/admin/conversations/user/${userId}/${conversationId}`, {
+export async function getConversation(companyLink,senderId) {
+    const response = await fetch(`${test_prod_url}/api/chat/client/conversations/user?companyLink=${companyLink}&senderId=${senderId}`, {
         method: 'GET', credentials:'include'
     });
     return response.json();
