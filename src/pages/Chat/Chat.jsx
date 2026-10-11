@@ -3,7 +3,7 @@ import {useEffect, useRef, useState} from "react";
 import {
     currentUser,
     getAllConversations,
-    getAllMessages,
+    getAllMessages, getConversation,
     getEmployees,
     givePermission,
     test_prod_url
@@ -99,7 +99,8 @@ export default function Chat() {
             }else {
                 const messages = await getAllMessages('', '', companyLink);
                 setMessages(messages.data);
-                await getConvMessage(messages.data,'', '');
+                const conversation = await getConversation(companyLink, user.id);
+                await getConvMessage(messages.data,`${conversation.user.firstName} ${conversation.user.lastName}`, '');
             }
             setLoading(false);
         })();
