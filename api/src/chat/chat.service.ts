@@ -90,7 +90,7 @@ constructor(@InjectRepository(ConversationEntity) private  readonly conversation
 
    async getAllConversations(link:string) {
     return await this.conversationDB.find({where:{company:{link}}, select:{customer:{firstName:true, lastName:true},
-     clientId:true, user:{firstName:true, lastName:true}, messages:{senderType:true,message:true}, id:true}, relations:['customer', 'user', 'messages']});
+     clientId:true, user:{firstName:true, lastName:true, id:true}, messages:{senderType:true,message:true}, id:true}, relations:['customer', 'user', 'messages']});
    }
 
    async updateConversationUser(userId:number, conversationId:number) {

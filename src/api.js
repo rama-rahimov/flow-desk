@@ -249,3 +249,9 @@ export async function getAllConversations(link) {
     });
     return response.json();
 }
+export async function givePermission(userId, conversationId) {
+    const response = await fetch(`${test_prod_url}/api/chat/admin/conversations/user/${userId}/${conversationId}`, {
+        method: 'GET', credentials:'include'
+    });
+    return response.json();
+}
