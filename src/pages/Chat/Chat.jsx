@@ -18,19 +18,23 @@ export default function Chat() {
     const [msg, setMsg] = useState('');
     const [name, setName] = useState('');
     const [perm, setPerm] = useState(true);
+    const [loading, setLoading] = useState(true);
     const [user, setUser] = useState({});
     const [allEmployees, setAllEmployees] = useState([]);
     const socketRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
-    async function getConvMessage(e, messages, name, conv){
-        e.preventDefault();
-        setMessages(messages.map(el=>({role_id: el.senderType==='CLIENT', msg:el.message})));
-        setName(name);
-        setSelectedConv(conv);
-        console.log({conv,user})
-        if(conv.user.id === user.id){
-            console.log('permm');
-            setPerm(false);
+    async function getConvMessage(messages, name, conv){
+        if(conv){
+            setMessages(messages.map(el=>({role_id: user.role_id !== 3 ? el.senderType==='CLIENT': el.senderType==='EMPLOYEE', msg:el.message})));
+            setName(name);
+            setSelectedConv(conv);
+            console.log({conv,user})
+            if(conv.user.id === user.id){
+                console.log('permm');
+                setPerm(false);
+            }
+        }else {
+            setMessages(messages);
         }
     }
     async function setSelectedUser(e,employee){
@@ -83,18 +87,21 @@ export default function Chat() {
         socketRef.current = socket;
         (async () => {
             const profile = await currentUser();
-            setUser(profile??{role_id:3});
-            if(profile.role_id !== 3){
-                const convers = await getAllConversations(companyLink);
-                setConversations(convers);
-                if(profile.role_id === 1){
-                 const employees = await getEmployees();
-                 setAllEmployees(employees);
-                }
+            console.log({profile});
+            setUser(profile?.id??{role_id:3});
+            if(profile?.id && profile.role_id !== 3){
+             const convers = await getAllConversations(companyLink);
+             setConversations(convers);
+             if(profile.role_id === 1){
+               const employees = await getEmployees();
+               setAllEmployees(employees);
+             }
             }else {
                 const messages = await getAllMessages('', '', companyLink);
                 setMessages(messages.data);
+                await getConvMessage(messages.data,'', '');
             }
+            setLoading(false);
         })();
         return () => {
             socket.off('connect');
@@ -104,67 +111,66 @@ export default function Chat() {
             socketRef.current = null;
         }
     },[]);
-    console.log({ isOpen, conversations });
-    return (
-   <div className="chat-layout">
-    {user.role_id !== 3 ?
-    <aside className="chat-sidebar">
-        <div className="chat-sidebar__header">
-            <h2>Chats</h2>
-            <input type="text" placeholder="Search chats..." />
-        </div>
-        <div className="chat-list">
-            {conversations.map((el, index) => (<div className="chat-item chat-item--active" key={index}
-             onClick={(e) => getConvMessage(e, el.messages,
-             `${el.customer?`${el.customer.firstName} ${el.customer.lastName}`:`Guest-${el.clientId.slice(0,5)}`}`, el)}>
-                <div className="chat-item__avatar"></div>
-                <div className="chat-item__info">
-                    <h3>{el.customer?`${el.customer.firstName} ${el.customer.lastName}`:`Guest-${el.clientId.slice(0,5)}`}</h3>
-                    {<p>{String(el.messages.at(-1).message).length>12?`${String(el.messages.at(-1).message)}...`:el.messages.at(-1).message}</p>}
+    console.log({ isOpen, conversations, messages });
+    return (loading?<h1>Loading...</h1>:
+    <div className="chat-layout">
+        {user.role_id !== 3 ?
+            <aside className="chat-sidebar">
+                <div className="chat-sidebar__header">
+                    <h2>Chats</h2>
+                    <input type="text" placeholder="Search chats..."/>
                 </div>
-            </div>))}
-        </div>
-    </aside>:''}
-    <section className="chat">
-        <div className="chat__header">
-            <h2>{name}</h2>
-        </div>
-        <div className="chat__messages">
-            {messages.map((el,index) => (
-                <div className={`message message--${user.role_id !== 3 && el.role_id ? 'employee' : 'client'}`} key={index}>
-                    {el.msg}
+                <div className="chat-list">
+                    {conversations.map((el, index) => (<div className="chat-item chat-item--active" key={index}
+                       onClick={() => getConvMessage(el.messages,
+                       `${el.customer ? `${el.customer.firstName} ${el.customer.lastName}` : `Guest-${el.clientId.slice(0, 5)}`}`, el)}>
+                        <div className="chat-item__avatar"></div>
+                        <div className="chat-item__info">
+                        <h3>{el.customer ? `${el.customer.firstName} ${el.customer.lastName}` : `Guest-${el.clientId.slice(0, 5)}`}</h3>
+                        {<p>{String((el.messages.at(-1) || {}).message || "").length > 12 ?
+                        `${String(el.messages.at(-1).message)}...` : (el.messages.at(-1) || {}).message || ""}</p>}
+                        </div>
+                    </div>))}
                 </div>
-            ))}
-        </div>
-        {name?<div className="chat__input">
-            <input
-                type="text" disabled={perm}
-                placeholder="Write a message..."
-                value={msg}
-                onChange={(e) => setMsg(e.target.value)}
-            />
-            <button disabled={perm} onClick={(e) => handlerMessage(e, msg)}>
-                Send
-            </button>
-            <button onClick={(e) => setIsOpen(true)}>
-                Permission
-            </button>
-            {isOpen && (
-                <div className="modal-overlay">
-                    <div className="modal">
-                        <button
-                            className="modal__close"
-                            onClick={() => setIsOpen(false)}
-                        >
-                            ×
-                        </button>
-                        <h2>Select one of the employees for give him permission</h2>
-                        {
-                            allEmployees.map((el, index) => (<div className="user-list">
+            </aside> : ''}
+        <section className="chat">
+            <div className="chat__header">
+                <h2>{name}</h2>
+            </div>
+            <div className="chat__messages">
+                {messages.map((el, index) => (
+                    <div className={`message message--${el.role_id ? 'employee' : 'client'}`} key={index}>{el.msg}</div>
+                ))}
+            </div>
+            {name ? <div className="chat__input">
+                <input
+                    type="text" disabled={perm}
+                    placeholder="Write a message..."
+                    value={msg}
+                    onChange={(e) => setMsg(e.target.value)}
+                />
+                <button disabled={perm} onClick={(e) => handlerMessage(e, msg)}>
+                    Send
+                </button>
+                <button onClick={(e) => setIsOpen(true)}>
+                    Permission
+                </button>
+                {isOpen && (
+                    <div className="modal-overlay">
+                        <div className="modal">
+                            <button
+                                className="modal__close"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                ×
+                            </button>
+                            <h2>Select one of the employees for give him permission</h2>
+                            {
+                                allEmployees.map((el, index) => (<div className="user-list">
                                     <div
                                         className="user-item"
                                         key={index}
-                                        onClick={(e) => setSelectedUser(e,el,index)}
+                                        onClick={(e) => setSelectedUser(e, el, index)}
                                     >
                                         <div className="user-item__avatar">
                                             {el.firstName.charAt(0).toUpperCase()}
@@ -174,13 +180,14 @@ export default function Chat() {
                                             <p>{el.email}</p>
                                         </div>
                                     </div>
-                            </div>))
-                        }
+                                </div>))
+                            }
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>:''}
-    </section>
+                )}
+            </div> : ''}
+        </section>
 
-</div>)
+    </div>
+)
 }

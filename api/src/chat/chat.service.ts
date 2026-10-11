@@ -91,8 +91,23 @@ constructor(@InjectRepository(ConversationEntity) private  readonly conversation
 
    async getAllConversations(link:string) {
     return await this.conversationDB.find({where:{company:{link}}, select:{customer:{firstName:true, lastName:true},
-     clientId:true, user:{firstName:true, lastName:true, id:true}, messages:{senderType:true,message:true}, id:true}, relations:['customer', 'user', 'messages']});
+     clientId:true, user:{firstName:true, lastName:true, id:true}, messages:{senderType:true,message:true}, id:true},
+     relations:['customer', 'user', 'messages']});
    }
+
+    async getConversation(link:string, senderId:string, visitorId) {
+    const obj = {company:{link}};
+    if (senderId) {
+        obj['customer'] = {id: senderId};
+    }else if(visitorId){
+        obj['clientId'] = visitorId;
+    }else {
+        throw new NotFoundException('No visitor');
+    }
+     return await this.conversationDB.findOne({where:{...obj}, select:{customer:{firstName:true, lastName:true, email:true},
+      clientId:true, user:{firstName:true, lastName:true, id:true, email:true}, messages:{senderType:true,message:true}, id:true},
+      relations:['customer', 'user', 'messages']});
+    }
 
    async updateConversationUser(userId:number, conversationId:number) {
     const converUpdate = await this.conversationDB.update({id:conversationId},{user:{id:userId}});
