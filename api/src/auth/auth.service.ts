@@ -47,6 +47,7 @@ export class AuthService {
       //     throw new ConflictException('User already exists!!!');
       //   }
       // }
+    console.log(dataRegister);
       if (findUser?.id) {
         throw new ConflictException('User already exists!');
       } else {

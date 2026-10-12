@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import {register} from '../../api.js';
+import {checkCompany, register} from '../../api.js';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -30,9 +30,11 @@ export default function Register() {
 
     useEffect(() => {
         const path = location.pathname.split('/')[1];
-        const jsonCompany = localStorage.getItem('company');
-        const company = JSON.parse(jsonCompany);
-        setForm((prev) => ({ ...prev, role_id: path === "register" ? 2: 1, companyId: path !== "register" ? company.id: ''}));
+        (async () => {
+         const companyData = await checkCompany(companyLink);
+         const company = companyData.data;
+         setForm((prev) => ({ ...prev, role_id: path === "register" ? 2: 1, companyId: path !== "register" ? (company || {}).id: ''}));
+        })()
     },[])
     return (
         <div className="auth-page">
