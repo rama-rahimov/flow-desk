@@ -3,7 +3,7 @@ export const test_prod_url = 'https://flow-desk-6trh.onrender.com';
 
 export async function register(userData) {
     const response = await fetch(`${test_prod_url}/api/register`, {
-        method: 'POST',
+        method: 'POST', credentials:'include',
         headers: {
             'Content-Type': 'application/json',
         },
