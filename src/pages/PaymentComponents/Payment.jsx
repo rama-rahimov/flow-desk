@@ -12,6 +12,7 @@ export default function Payment() {
     const [checkPay, setCheckPay] = useState(false);
     const [company, setCompany] = useState({});
     const [employeesLimit, setEmployeesLimit] = useState(1);
+    // это нужно приносить из бд скорее всего
     const PRICING_PLANS = [
         {
             id: '1',
@@ -45,8 +46,8 @@ export default function Payment() {
    const cancelSub = async () => {
         const res = confirm('Do you want to cancel the subscription?');
         if (res) {
-         const data = {sub_id:paymentData.stripe_subscription_id,
-          cancel_at_period_end:true, paymentId:paymentData.id, companyId: company?.id};
+        const data = {sub_id:paymentData.stripe_subscription_id,
+        cancel_at_period_end:true, paymentId:paymentData.id, companyId: company?.id};
         const resCancel = await updateSubscription(data);
         console.log({resCancel});
         setIsChange((prev) => !prev)
@@ -120,6 +121,7 @@ export default function Payment() {
         })()
     }, [isChange]);
     console.log({paymentData});
+    //тут есть два больших div их нужно разделить на два компонента
     return (
         <main className="pricing-container">
             <header className="pricing-header">

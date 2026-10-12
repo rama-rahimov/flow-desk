@@ -27,7 +27,6 @@ export default function Register() {
         alert('Registration successful');
         navigate(`/${form.role_id === 2 ? form.link : companyLink}/login`);
     }
-
     useEffect(() => {
         const path = location.pathname.split('/')[1];
         (async () => {
@@ -36,6 +35,7 @@ export default function Register() {
          setForm((prev) => ({ ...prev, role_id: path === "register" ? 2: 1, companyId: path !== "register" ? (company || {}).id: ''}));
         })()
     },[])
+    // Разделить на компоненты и посмотреть есть ли что-то ещё чтобы исправить
     return (
         <div className="auth-page">
             <div className="auth-container">

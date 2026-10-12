@@ -74,7 +74,7 @@ export default function Profile() {
     if (!user) {
         return <div className="profile-loading">User not found</div>;
     }
-    console.log({file: file.name, avatar: (form.avatar || {}).url});
+    // ещё раз пройти по строению страницы и попытаться сделать более улучшеную версию
     return (
         <div className="profile-page">
             <div className="profile-card">

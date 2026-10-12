@@ -127,7 +127,6 @@ function Employees() {
                                 >
                                     Cancel
                                 </button>
-
                                 <button type="submit">
                                     Add employee
                                 </button>

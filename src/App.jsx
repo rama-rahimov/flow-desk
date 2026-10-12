@@ -19,7 +19,6 @@ import Products from "./pages/Products/Products.jsx";
 import Profile from "./pages/Profile/Profile.jsx";
 import Employees from "./pages/Employees/Employees.jsx";
 import Payment from "./pages/PaymentComponents/Payment.jsx";
-import ProfileRamiz from "./pages/Profile/RamizProfile.jsx";
 import {Head} from "./pages/HomeComponent/Head.jsx";
 import Chat from "./pages/Chat/Chat.jsx";
 
@@ -37,11 +36,9 @@ function AppContent() {
               }else {
                navigate('/wrong_url');
               }
-
             }
         })()
     },[])
-
     return (
         <Routes>
             <Route path="/" element={<Home />}/>
@@ -53,7 +50,6 @@ function AppContent() {
             <Route path="/:companyLink/chat" element={<Chat />}/>
             <Route path="/:companyLink/profile" element={<Profile />}/>
             <Route path="/:companyLink/head" element={<Head />} />
-            <Route path="/:companyLink/profile_ramiz" element={<ProfileRamiz />}/>
             <Route path="/:companyLink/register" element={<Register />}/>
             <Route path="/:companyLink/products" element={<Products />}/>
             <Route path="/register" element={<Register />}/>
@@ -62,7 +58,6 @@ function AppContent() {
         </Routes>
     );
 }
-
 function App() {
     return (
         <BrowserRouter>
