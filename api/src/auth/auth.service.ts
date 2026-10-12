@@ -89,7 +89,7 @@ export class AuthService {
           if(conversation?.id){
             console.log("Strat, New client updated!");
             await this.convDB.update({id: conversation?.id},{customer: {id: customer.id}});
-            await this.messagesDB.update({conversation:{id:conversation?.id}, senderId: String(visitorId)},{senderId: String(customer.id)});
+            await this.messagesDB.update({conversation:{id:conversation?.id}, senderId: visitorId},{senderId: String(customer.id)});
             console.log("End, New client updated!");
           }
           return { success: true, data: customer };
