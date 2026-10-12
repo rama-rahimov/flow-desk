@@ -100,7 +100,7 @@ export default function Chat() {
                 const messages = await getAllMessages('', '', companyLink);
                 setMessages(messages.data);
                 const conversation = await getConversation(companyLink, user.id);
-                await getConvMessage(messages.data,`${conversation.user.firstName} ${conversation.user.lastName}`, '');
+                await getConvMessage(messages.data,conversation.user?.firstName?`${conversation.user.firstName} ${conversation.user.lastName}`:'', '');
             }
             setLoading(false);
         })();
