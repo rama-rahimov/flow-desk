@@ -11,14 +11,15 @@ import { RoleEntity } from '../users/entities/role.entity.js';
 import { AuthController } from './auth.controller.js';
 import { CompanyEntity } from '../companies/entities/company.entity.js';
 import { CustomerEntity } from '../customers/entities/customer.entity.js';
+import {ConversationEntity} from "../chat/entities/conversation.entity.js";
+import {MessageEntity} from "../chat/entities/message.entity.js";
 dotenv.config();
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      UserEntity,
-      RoleEntity,
-      CompanyEntity,
-      CustomerEntity,
+      UserEntity, RoleEntity,
+      CompanyEntity, CustomerEntity,
+      ConversationEntity, MessageEntity
     ]),
     JwtModule.register({
       secret: process.env.JWT_SECRET,

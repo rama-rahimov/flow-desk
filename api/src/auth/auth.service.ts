@@ -8,6 +8,8 @@ import {ConflictException, Injectable, UnauthorizedException} from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { CompanyEntity } from '../companies/entities/company.entity.js';
 import { CustomerEntity } from '../customers/entities/customer.entity.js';
+import {ConversationEntity} from "../chat/entities/conversation.entity.js";
+import {MessageEntity} from "../chat/entities/message.entity.js";
 
 @Injectable()
 export class AuthService {
@@ -18,9 +20,13 @@ export class AuthService {
     private readonly companyDB: Repository<CompanyEntity>,
     @InjectRepository(CustomerEntity)
     private readonly customerDB: Repository<CustomerEntity>,
-    private readonly jwt: JwtService,
+    @InjectRepository(ConversationEntity)
+    private readonly convDB: Repository<ConversationEntity>,
+    @InjectRepository(MessageEntity)
+    private readonly messagesDB: Repository<MessageEntity>,
+    private readonly jwt: JwtService
   ) {}
-  async register(dataRegister: RegisterDto) {
+  async register(dataRegister: RegisterDto, visitorId) {
       const {
         firstName,
         lastName,
@@ -71,6 +77,7 @@ export class AuthService {
             return { success: true, data: { ...user, ...company } };
           }
         } else {
+          const conversation = await this.convDB.findOneBy({clientId:visitorId, company:{link}});
           const createCustomer = this.customerDB.create({
             firstName,
             lastName,
@@ -79,6 +86,12 @@ export class AuthService {
             company: { id: companyId },
           });
           const customer = await this.customerDB.save(createCustomer);
+          if(conversation?.id){
+            console.log("Strat, New client updated!");
+            await this.convDB.update({id: conversation?.id},{customer: {id: customer.id}});
+            await this.messagesDB.update({conversation:{id:conversation?.id}},{senderId: String(customer.id)});
+            console.log("End, New client updated!");
+          }
           return { success: true, data: customer };
         }
       }
