@@ -23,27 +23,26 @@ export default function Chat() {
     const [allEmployees, setAllEmployees] = useState([]);
     const socketRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
-    async function getConvMessage(messages, name, conv){
-        if(conv){
+    async function getConvMessage(messages, name, conv={}){
+        console.log({conv});
+        if(conv.id){
             setMessages(messages.map(el=>({role_id: user.role_id !== 3 ? el.senderType==='CLIENT': el.senderType==='EMPLOYEE', msg:el.message})));
             setName(name);
             setSelectedConv(conv);
-            console.log({conv,user})
+            console.log({user});
             if(conv.user.id === user.id){
-                console.log('permm');
                 setPerm(false);
             }
         }else {
+            setName(name);
             setMessages(messages);
         }
     }
     async function setSelectedUser(e,employee){
      e.preventDefault();
-     console.log({employee, conversations, setSelectedConv});
      const permission = await givePermission(employee.id, selectedConv.id);
      if(permission.success){
          if(employee.id === user.id){
-             console.log('permm');
              setPerm(false);
          }else {
              setPerm(true)
@@ -56,7 +55,6 @@ export default function Chat() {
         if (!message.trim()) return;
 
         if (socketRef.current && socketRef.current.connected) {
-            console.log("message", message, selectedConv.id);
             socketRef.current.emit('message',{companyLink, message, conversationId: selectedConv.id});
             setMsg('');
         }else {
@@ -87,8 +85,7 @@ export default function Chat() {
         socketRef.current = socket;
         (async () => {
             const profile = await currentUser();
-            console.log({profile});
-            setUser(profile?.id??{role_id:3});
+            setUser(profile?.id?profile:{role_id:3});
             if(profile?.id && profile.role_id !== 3){
              const convers = await getAllConversations(companyLink);
              setConversations(convers);
@@ -100,7 +97,8 @@ export default function Chat() {
                 const messages = await getAllMessages('', '', companyLink);
                 setMessages(messages.data);
                 const conversation = await getConversation(companyLink, user.id);
-                await getConvMessage(messages.data,conversation.user?.firstName?`${conversation.user.firstName} ${conversation.user.lastName}`:'', '');
+                await getConvMessage(messages.data,conversation.user?.firstName?`Employee ${conversation.user.firstName} ${conversation.user.lastName}`:'', '');
+                setPerm(false);
             }
             setLoading(false);
         })();
@@ -112,7 +110,6 @@ export default function Chat() {
             socketRef.current = null;
         }
     },[]);
-    console.log({ isOpen, conversations, messages });
     return (loading?<h1>Loading...</h1>:
     <div className="chat-layout">
         {user.role_id !== 3 ?
@@ -153,9 +150,9 @@ export default function Chat() {
                 <button disabled={perm} onClick={(e) => handlerMessage(e, msg)}>
                     Send
                 </button>
-                <button onClick={(e) => setIsOpen(true)}>
+                {(user?.id && user?.id === 1) ? <button onClick={(e) => setIsOpen(true)}>
                     Permission
-                </button>
+                </button>:''}
                 {isOpen && (
                     <div className="modal-overlay">
                         <div className="modal">

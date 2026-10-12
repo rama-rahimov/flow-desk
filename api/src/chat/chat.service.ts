@@ -23,7 +23,7 @@ constructor(@InjectRepository(ConversationEntity) private  readonly conversation
                message: data.message
            });
            await this.messageDB.save(messageObj);
-           return {role_id:1, msg: data.message, conversationId: data.conversationId};
+           return {role_id:0, msg: data.message, conversationId: data.conversationId};
        }else {
            const obj = {};
            if(data.senderId){
