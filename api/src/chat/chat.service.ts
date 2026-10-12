@@ -95,7 +95,7 @@ constructor(@InjectRepository(ConversationEntity) private  readonly conversation
      relations:['customer', 'user', 'messages']});
    }
 
-    async getConversation(link:string, senderId:string, visitorId) {
+    async getConversation(link:string, senderId:number, visitorId) {
     const obj = {company:{link}};
     console.log({visitorId, senderId});
     if (senderId) {
