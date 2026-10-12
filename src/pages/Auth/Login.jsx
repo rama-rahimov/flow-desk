@@ -7,8 +7,8 @@ export default function Login() {
     const navigate = useNavigate();
     const [form, setForm] = useState({ email: '', password: '' });
     function handleChange(event) {
-        const { name, value } = event.target;
-        setForm((prev) => ({ ...prev, [name]: value, })); }
+     const { name, value } = event.target;
+     setForm((prev) => ({ ...prev, [name]: value, })); }
     async function handleSubmit(event) {
         event.preventDefault();
         const result = await login({ email: form.email, password: form.password });
@@ -33,6 +33,8 @@ export default function Login() {
                     <input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} required />
                     <button type="submit"> Login </button> </form>
                 <div className="auth-link"> <button onClick={() => navigate(`/${companyLink}/register`)}> Create account </button>
-                </div> </div>
-        </div> );
+                </div>
+            </div>
+        </div>
+    );
 }

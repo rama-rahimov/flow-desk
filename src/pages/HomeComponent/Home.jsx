@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
-
+//эту страницу надо полностью изменить
 export default function Home() {
     const navigate = useNavigate();
     return (

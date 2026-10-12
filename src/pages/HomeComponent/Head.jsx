@@ -1,8 +1,7 @@
 import {useEffect, useState} from "react";
-import {checkCompany, cookie, cookieClear, findProducts, test_prod_url} from "../../api.js";
+import {checkCompany, cookie, findProducts} from "../../api.js";
 import {useNavigate, useParams} from "react-router-dom";
 import lion from "../../images/justlion.jpg";
-import {io} from "socket.io-client";
 
 export function Head() {
     const navigate = useNavigate();
@@ -12,16 +11,6 @@ export function Head() {
         (async () => {
             const cookies = await cookie();
             // await cookieClear();
-            const socket = io(test_prod_url, {
-                withCredentials: true
-            });
-            socket.on("connect", async () => {
-                socket.emit('message', 'Helloooouu');
-                console.log("Emit!");
-            });
-            socket.on('response', (msg) => {
-                console.log(msg);
-            });
           const company = await checkCompany(companyLink);
           if(company?.success){
               const getProducts = await findProducts(company.data.id);
@@ -52,29 +41,24 @@ export function Head() {
                     Login
                 </button>
             </header>
-
             <main>
                 <section className="hero">
                     <div className="hero-content">
                         <p className="hero-label">Welcome to our company</p>
-
                         <h1>
                             Everything you need,
                             <br />
                             in one place.
                         </h1>
-
                         <p className="hero-description">
                             Discover our products and services and find
                             everything you need for your business.
                         </p>
-
                         <a href="#products" className="hero-button">
                             View products
                         </a>
                     </div>
                 </section>
-
                 <section id="products" className="products-section">
                     <div className="section-heading">
                         <p>Our products</p>
@@ -92,17 +76,14 @@ export function Head() {
                         </div>)))}
                     </div>
                 </section>
-
                 <section id="about" className="about-section">
                     <div className="about-content">
                         <p>About us</p>
-
                         <h2>
                             We help businesses
                             <br />
                             grow and work smarter.
                         </h2>
-
                         <p>
                             Our company provides reliable products and
                             services designed to make everyday work
@@ -110,24 +91,19 @@ export function Head() {
                         </p>
                     </div>
                 </section>
-
                 <section id="contact" className="contact-section">
                     <h2>Have any questions?</h2>
-
                     <p>
                         Contact us and we will be happy to help you.
                     </p>
-
                     <button>Contact us</button>
                 </section>
             </main>
-
             <footer className="client-footer">
                 <div>
                     <strong>FlowDesk</strong>
                     <p>Simple business management.</p>
                 </div>
-
                 <div>
                     <p>© 2026 FlowDesk</p>
                 </div>

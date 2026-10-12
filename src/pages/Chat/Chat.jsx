@@ -110,6 +110,7 @@ export default function Chat() {
             socketRef.current = null;
         }
     },[]);
+    //здесь надо разделить на компоненты и более аккуратно сделать условия
     return (loading?<h1>Loading...</h1>:
     <div className="chat-layout">
         {user.role_id !== 3 ?

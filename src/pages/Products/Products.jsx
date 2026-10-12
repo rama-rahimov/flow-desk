@@ -1,10 +1,11 @@
 import {useEffect, useState} from 'react';
 import './Product.css';
-import {useLocation, useNavigate} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {addProduct, deleteProduct, editProduct, findProducts} from "../../api.js";
 
 export default function Products() {
     const navigate = useNavigate();
+    const { companyLink } = useParams();
     const location = useLocation();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isChange, setIsChange] = useState(false);
@@ -75,13 +76,14 @@ export default function Products() {
          }));
         })()
     },[isChange]);
+    // модал возможно лучше вынести в отдельный компонент
     return (
         <div className="products-page">
             <div className="products-header">
                 <h1>Products</h1>
                 <button
                     className="products-add-button"
-                    onClick={() => navigate(`/${stateData.companyName}/dashboard`)}
+                    onClick={() => navigate(`/${companyLink}/dashboard`)}
                 >
                     Dashboard
                 </button>
@@ -102,18 +104,15 @@ export default function Products() {
                             <h2>{pr.name}</h2>
                             <p>{pr.description}</p>
                         </div>
-
                         <div className="product-info">
                             <div className="product-price">
                                 <span className="product-price-label">
                                     Price
                                 </span>
-
                                 <span className="product-price-value">
                                     {pr.price}
                                 </span>
                             </div>
-
                             <div>
                                 <button onClick={() => {
                                     setIsModalOpen(true);
@@ -140,9 +139,7 @@ export default function Products() {
                                 ×
                             </button>
                         </div>
-
                         <form onSubmit={handleSubmit}>
-
                             <label>
                                 Name
                                 <input
