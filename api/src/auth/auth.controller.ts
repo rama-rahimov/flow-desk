@@ -10,7 +10,7 @@ export class AuthController {
   @Post('/api/register')
   register(@Req() req: Request, @Body() registerDto: RegisterDto) {
     const visitorId = req.cookies.visitorId;
-    console.log("dataRegister", registerDto, visitorId);
+    console.log("dataRegister", registerDto, visitorId, req.cookies, req.cookies.visitorId);
     return this.authService.register(registerDto, visitorId);
   }
 

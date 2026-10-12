@@ -78,6 +78,7 @@ export class AuthService {
           }
         } else {
           const conversation = await this.convDB.findOneBy({clientId:visitorId, company:{link}});
+          console.log({ conversation, visitorId, link });
           const createCustomer = this.customerDB.create({
             firstName,
             lastName,
