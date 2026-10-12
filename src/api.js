@@ -260,6 +260,8 @@ export async function getConversation(companyLink,senderId) {
     let query = `companyLink=${companyLink}`;
     if(senderId){
       query += `&senderId=${senderId}`;
+    }else{
+        query += `&senderId=${0}`;
     }
     const response = await fetch(`${test_prod_url}/api/chat/client/conversations?${query}`, {
         method: 'GET', credentials:'include'
