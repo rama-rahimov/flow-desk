@@ -19,7 +19,7 @@ export default function Register() {
     }
     async function handleSubmit(event) {
         event.preventDefault();
-        const result = await register(form);
+        const result = await register({...form, link: form.link?form.link:companyLink});
         if (!result.success) {
             alert(result.message);
             return;
