@@ -9,8 +9,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post('/api/register')
   register(@Req() req: Request, @Body() registerDto: RegisterDto) {
-    console.log("dataRegister", registerDto);
     const visitorId = req.cookies.visitorId;
+    console.log("dataRegister", registerDto, visitorId);
     return this.authService.register(registerDto, visitorId);
   }
 
