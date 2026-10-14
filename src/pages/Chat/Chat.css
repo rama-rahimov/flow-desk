@@ -20,6 +20,7 @@
 }
 
 .chat-sidebar__header {
+    position: relative;
     padding: 18px;
     border-bottom: 1px solid #e2e8f0;
 }
@@ -301,4 +302,13 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+}
+
+.badge{
+    padding: 6px 10px;
+    background-color: red;
+    color: white;
+    position: absolute;
+    top: 0;
+    left: 20px;
 }

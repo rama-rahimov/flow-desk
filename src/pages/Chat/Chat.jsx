@@ -24,7 +24,6 @@ export default function Chat() {
     const socketRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
     async function getConvMessage(messages, name, conv={}){
-        console.log({conv});
         if(conv.id){
             setMessages(messages.map(el=>({role_id: user.role_id !== 3 ? el.senderType==='CLIENT': el.senderType==='EMPLOYEE', msg:el.message})));
             setName(name);
@@ -116,6 +115,7 @@ export default function Chat() {
         {user.role_id !== 3 ?
             <aside className="chat-sidebar">
                 <div className="chat-sidebar__header">
+                    <div className="badge">3</div>
                     <h2>Chats</h2>
                     <input type="text" placeholder="Search chats..."/>
                 </div>

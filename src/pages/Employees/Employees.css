@@ -1,42 +1,74 @@
 .employees-page {
-    padding: 30px;
+  background-color: #64748b;
+  color: white;
+  padding: 20px;
+  height: 100vh;
 }
 
-.employees-header {
+.employees-header{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border: none;
 }
 
-.employees-header button {
-    padding: 10px 16px;
+.td_check{
+    height: 25px;
+    width: 20px;
+}
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead th{
+    text-align: left;
+   border-bottom: 1px solid #ffffff;
+   padding: 5px 0;
+}
+tbody td{
+    border-bottom: 1px solid #ffffff;
+    padding: 20px 0;
+}
+
+.container_table{
+    padding: 20px;
+    background-color: goldenrod;
+    border-radius: 4px;
+}
+
+.rows{
+    display: grid;
+    grid-template-columns:repeat(5, minmax(300px, 1fr));
+}
+
+.rows td{
+    text-align: center;
+}
+
+.nav_b{
+    padding: 10px 20px;
+    background-color: darkslategrey;
+    color: white;
     border: none;
     border-radius: 6px;
     cursor: pointer;
+    font-size: 16px;
+    margin: 0 5px;
 }
 
-.employees-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.employee-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 18px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-}
-
-.employee-card h3 {
-    margin: 0 0 5px;
-}
-
-.employee-card p {
-    margin: 0;
+.nav_bd{
+    padding: 10px 20px;
+    background-color: #dc2626;
+    color: #0f172a;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 5px;
 }
 
 .modal-overlay {

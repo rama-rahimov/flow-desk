@@ -448,3 +448,52 @@
         text-align: center;
     }
 }
+
+
+
+
+
+
+.container{
+    display: grid;
+   padding: 10px;
+   color: white;
+}
+
+.sub_container{
+    display: flex;
+    justify-content: space-between;
+}
+
+.nav_b{
+    padding: 10px 20px;
+    background-color: #6b7280;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 5px;
+}
+
+.main{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 25px;
+    padding-top: 25px;
+}
+
+.card{
+    padding: 40px 10px;
+    background-color: #6b7280;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.card p{
+    font-size: 20px;
+    color: #0f172a;
+    font-weight: 600;
+}

@@ -1,7 +1,7 @@
 .products-page {
-    min-height: 100vh;
+    height: 100vh;
     padding: 40px;
-    background: #f5f7fb;
+    background-color: #dddddd;
 }
 
 .products-header {
@@ -11,14 +11,35 @@
     margin-bottom: 30px;
 }
 
+.products-main{
+    background-color: #9ca3af;
+    padding: 20px;
+    border-radius: 6px;
+}
+
 .products-header h1 {
     margin: 0;
     font-size: 32px;
     color: #1f2937;
 }
+.products-delete-button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    background: crimson;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.products-delete-button:hover {
+    background: red;
+}
 
 .products-add-button {
     padding: 10px 18px;
+    margin: 0 5px;
     border: none;
     border-radius: 8px;
     background: #2563eb;
@@ -30,6 +51,12 @@
 
 .products-add-button:hover {
     background: #1d4ed8;
+}
+
+tbody tr:hover{
+    transition: background 0.5s;
+    background-color: #cccccc;
+    cursor: pointer;
 }
 
 .products-list {

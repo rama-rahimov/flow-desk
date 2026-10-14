@@ -2,12 +2,17 @@ import {useEffect, useState} from 'react';
 import './Product.css';
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {addProduct, deleteProduct, editProduct, findProducts} from "../../api.js";
+import {ProductModal} from "./ProductModal.jsx";
+import {TrModal} from "./TrModal.jsx";
 
 export default function Products() {
     const navigate = useNavigate();
     const { companyLink } = useParams();
     const location = useLocation();
+    const [title, setTitle] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [prdId, setPrdId] = useState(null);
+    const [isModalTrOpen, setIsModalTrOpen] = useState(false);
     const [isChange, setIsChange] = useState(false);
     const [stateData, setStateData] = useState(location.state);
     const [form, setForm] = useState({
@@ -18,8 +23,14 @@ export default function Products() {
         companyId: stateData.companyId,
         id: 0
     });
+    const handleTr = (e, id) => {
+        e.preventDefault();
+        setPrdId(id);
+        setTitle('Edit');
+        setIsModalTrOpen(true);
+    }
     const handleChange = (e) => {
-        if(e.target.name === 'price'){
+        if(e.target.id === 'price'){
             if (/^\d*\.?\d*$/.test(e.target.value)) {
                 setForm({
                     ...form,
@@ -29,7 +40,7 @@ export default function Products() {
         }else {
             setForm({
                 ...form,
-                [e.target.name]: e.target.value,
+                [e.target.id]: e.target.value,
             })
         }
     };
@@ -58,14 +69,18 @@ export default function Products() {
             companyId: stateData.companyId
         });
     };
-    const handleDelete = async (e,id) => {
+    const handleDelete = async (e) => {
        e.preventDefault();
-      const res = await deleteProduct(id);
-      if (res.message) {
-          alert(res.message);
-      }else {
-          alert('Delete product successful!');
-          setIsChange((prevState) => !prevState);
+       setIsModalTrOpen(false);
+      const result = confirm('Are you sure, delete product ?');
+      if (result) {
+          const res = await deleteProduct(prdId);
+          if (res.message) {
+              alert(res.message);
+          }else {
+              alert('Delete product successful!');
+              setIsChange((prevState) => !prevState);
+          }
       }
     }
     useEffect(() => {
@@ -81,116 +96,35 @@ export default function Products() {
         <div className="products-page">
             <div className="products-header">
                 <h1>Products</h1>
-                <button
-                    className="products-add-button"
-                    onClick={() => navigate(`/${companyLink}/dashboard`)}
-                >
-                    Dashboard
-                </button>
-                <button
-                    className="products-add-button"
-                    onClick={() => {
-                        setIsModalOpen(true);
-                    }}
-                >
-                    + Add product
-                </button>
-            </div>
-
-            <div className="products-list">
-                {(stateData?.products || []).map((pr) => (
-                    <div className="product-card" key={pr.id}>
-                        <div>
-                            <h2>{pr.name}</h2>
-                            <p>{pr.description}</p>
-                        </div>
-                        <div className="product-info">
-                            <div className="product-price">
-                                <span className="product-price-label">
-                                    Price
-                                </span>
-                                <span className="product-price-value">
-                                    {pr.price}
-                                </span>
-                            </div>
-                            <div>
-                                <button onClick={() => {
-                                    setIsModalOpen(true);
-                                    setForm((prevState) => ({...prevState, id: pr.id}))
-                                }}>Edit</button>
-                                <button onClick={(e) => handleDelete(e,pr.id)}>Delete</button>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {isModalOpen && (
-                <div className="modal-overlay">
-                    <div className="product-modal">
-
-                        <div className="modal-header">
-                            <h2>Add Product</h2>
-
-                            <button
-                                className="modal-close"
-                                onClick={() => setIsModalOpen(false)}
-                            >
-                                ×
-                            </button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
-                            <label>
-                                Name
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={form.name}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </label>
-
-                            <label>
-                                Description
-                                <textarea
-                                    name="description"
-                                    value={form.description}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </label>
-
-                            <label>
-                                Price
-                                <input
-                                    type="text"
-                                    name="price"
-                                    value={form.price}
-                                    onChange={handleChange}
-                                    inputMode="decimal"
-                                    required
-                                />
-                            </label>
-
-                            <div className="modal-actions">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                >
-                                    Cancel
-                                </button>
-
-                                <button type="submit" onClick={handleSubmit}>
-                                    Save
-                                </button>
-                            </div>
-
-                        </form>
-                    </div>
+                <div>
+                 <button className="products-add-button" onClick={() => navigate(`/${companyLink}/dashboard`)}>Dashboard</button>
+                 <button className="products-add-button" onClick={() => {setIsModalOpen(true); setTitle('Add');}}>+ Add product</button>
                 </div>
-            )}
-
+            </div>
+            <div className="products-main">
+                <table>
+                    <thead>
+                      <tr>
+                          <th>#</th>
+                          <th>Name</th>
+                          <th>Description</th>
+                          <th>Price</th>
+                          {/*<th>Status</th>*/}
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {(stateData?.products || []).map((pr,index) => (<tr key={index} onClick={(e) => handleTr(e, pr.id)}>
+                        <td>{pr.id}</td>
+                        <td>{pr.name}</td>
+                        <td>{pr.description}</td>
+                        <td>${pr.price}</td>
+                        {/*<td>{pr.id}</td>*/}
+                    </tr>))}
+                    </tbody>
+                </table>
+            </div>
+            {isModalTrOpen && <TrModal handleDelete={handleDelete} setIsModalTrOpen={setIsModalTrOpen} setIsModalOpen={setIsModalOpen}/>}
+            {isModalOpen && <ProductModal handleSubmit={handleSubmit} handleChange={handleChange} form={form} setIsModalOpen={setIsModalOpen} title={title}/>}
         </div>
     );
 }
