@@ -13,6 +13,7 @@ import {ProductModule} from "./product/product.module.js";
 import {ImageModule} from "./images/image.module.js";
 import {CustomerModule} from "./customers/customer.module.js";
 import {ChatModule} from "./chat/chat.module.js";
+import { RedisModule } from './redis/redis.module.js';
 dotenv.config();
 
 @Module({
@@ -22,11 +23,13 @@ dotenv.config();
     PaymentsModule,
     ProductModule,
     ImageModule,
+    RedisModule,
     ChatModule,
     CustomerModule,
     DealModule,
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot(typeOrmConfig),
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
