@@ -99,9 +99,12 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-      const customer = await this.customerDB.findOneBy({email: loginDto.email});
-      const user = await this.userDB.findOneBy({email: loginDto.email});
+      const customer = await this.customerDB.findOne({where:{email: loginDto.email}, select:{password:true, id: true,
+      email: true, company:{id:true}}, relations:{company: true}});
+      const user = await this.userDB.findOne({where:{email: loginDto.email}, select:{password:true, id:true,
+      email: true, company:{id:true}}, relations:{company: true}});
       const result = customer ?? user;
+    console.log({result});
       if (!result?.id) {
         throw new UnauthorizedException('Invalid email or password!');
       } else {
@@ -112,7 +115,7 @@ export class AuthService {
         if (!checkPassword) {
           throw new UnauthorizedException('Invalid email or password!');
         } else {
-          const payload = { sub: result.id, email: result.email, companyId: result.company.id };
+          const payload = { sub: result.id, email: result.email, companyId: result.company?.id };
           return { success: true, data: this.jwt.sign(payload), role_id: user ? 2: 1 };
         }
       }
