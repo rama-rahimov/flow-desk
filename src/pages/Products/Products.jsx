@@ -74,7 +74,7 @@ export default function Products() {
        setIsModalTrOpen(false);
       const result = confirm('Are you sure, delete product ?');
       if (result) {
-          const res = await deleteProduct(prdId);
+          const res = await deleteProduct(prdId, form.companyId);
           if (res.message) {
               alert(res.message);
           }else {

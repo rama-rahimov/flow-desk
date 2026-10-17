@@ -104,8 +104,8 @@ export async function editProduct(data) {
     return response.json();
 }
 
-export async function deleteProduct(id) {
-    const response = await fetch(`${test_prod_url}/api/product/delete/${id}`, {
+export async function deleteProduct(id, companyId) {
+    const response = await fetch(`${test_prod_url}/api/product/delete/${id}/${companyId}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
