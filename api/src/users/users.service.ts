@@ -69,9 +69,8 @@ export class UsersService {
 
   async getEmployees(obj:UserDTO){
     const employeesJson = await this.redisService.get(`employeesCompany_${obj.user.company.id}`);
-    const employees = JSON.parse(employeesJson);
-    if((employees||[]).length > 0){
-      return employees;
+    if(employeesJson){
+    return JSON.parse(employeesJson);
     }else {
       const employeesCompany= await this.userDB.find({where:{company:{id: obj.user.company.id}}});
       await this.redisService.set(`employeesCompany_${obj.user.company.id}`, JSON.stringify(employeesCompany));
