@@ -122,7 +122,7 @@ export class PaymentsService {
   }
 
   async checkPayment(data){
-    console.log({ data });
+    console.log({ data : data.user});
     const resultP = await this.paymentDB.findOne({where:{company_id: data.user.company.id, payment_status:{id:Not(2)}},
       relations: ['payment_status'], select:{ id: true, cancel_at_period_end:true, stripe_subscription_id:true, current_period_end:true,
         employee_limit:true, price:true, currency:true,

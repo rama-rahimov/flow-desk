@@ -42,6 +42,7 @@ export class ProductService {
        const productAllJson = await this.redisService.get(`productAll_${id}`);
         console.log({ productAllJson });
        if(productAllJson){
+           console.log("all product")
            return JSON.parse(productAllJson);
        }else {
           const products =  await this.productDB.findBy({company:{id}});
@@ -53,6 +54,7 @@ export class ProductService {
     async findOne(id:number): Promise<ProductEntity|null> {
         const productJson = await this.redisService.get(`product_${id}`);
         if(productJson){
+            console.log("one product");
             return JSON.parse(productJson);
         }else {
           const getProduct= await this.productDB.findOneBy({id});
