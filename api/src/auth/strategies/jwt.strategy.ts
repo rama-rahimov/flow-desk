@@ -28,6 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
   async validate(payload: JwtPayload) {
     const jwtUserJson = await this.redisService.get(`userId_${payload.sub}&email_${payload.email}&companyId_${payload.companyId}`);
+    console.log({jwtUserJson});
     if (jwtUserJson){
       const user = JSON.parse(jwtUserJson);
       return user;

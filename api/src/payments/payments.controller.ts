@@ -11,7 +11,6 @@ import { PaymentsService } from './payments.service.js';
 import { CreateCheckoutDto } from './dto/create-checkout.dto.js';
 import dotenv from 'dotenv';
 import Stripe from 'stripe';
-import {UserDTO} from "../auth/dto/user.dto.js";
 import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard.js";
 import {UpdateSubDto} from "./dto/update_subscription.dto.js";
 import {Amount_dueDto} from "./dto/amount_due.dto.js";
