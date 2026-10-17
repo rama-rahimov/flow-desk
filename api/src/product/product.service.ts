@@ -40,7 +40,7 @@ export class ProductService {
 
     async findAll(id:number): Promise<ProductEntity[] | null> {
        const productAllJson = await this.redisService.get(`productAll_${id}`);
-
+        console.log({productAllJson, type: typeof productAllJson === 'string'}, productAllJson && typeof productAllJson === 'string');
        if(productAllJson && typeof productAllJson === 'string'){
            return JSON.parse(productAllJson);
        }else {
