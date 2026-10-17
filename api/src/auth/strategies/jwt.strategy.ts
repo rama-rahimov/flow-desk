@@ -28,9 +28,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
   async validate(payload: JwtPayload) {
     const jwtUserJson = await this.redisService.get(`userId_${payload.sub}&email_${payload.email}&companyId_${payload.companyId}`);
-    const jwtUser = JSON.parse(jwtUserJson);
-    if(jwtUser?.id){
-      const user = jwtUser;
+    if (jwtUserJson){
+      const user = JSON.parse(jwtUserJson);
       return user;
     }else {
       const user = await this.userDB.findOne({where:{id: payload.sub, email:payload.email, company:{id:payload.companyId}}, select:{
