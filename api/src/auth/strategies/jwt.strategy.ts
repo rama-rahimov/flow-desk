@@ -30,6 +30,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const jwtUserJson = await this.redisService.get(`userId_${payload.sub}&email_${payload.email}&companyId_${payload.companyId}`);
     console.log({jwtUserJson});
     if (jwtUserJson){
+      console.log("jwtUserJsonnnnn");
       const user = JSON.parse(jwtUserJson);
       return user;
     }else {
