@@ -40,11 +40,12 @@ export class ProductService {
 
     async findAll(id:number): Promise<ProductEntity[] | null> {
        const productAllJson = await this.redisService.get(`productAll_${id}`);
-       if(productAllJson){
+
+       if(productAllJson && typeof productAllJson === 'string'){
            return JSON.parse(productAllJson);
        }else {
           const products =  await this.productDB.findBy({company:{id}});
-          await this.redisService.set(`productAll_${id}`, products);
+          await this.redisService.set(`productAll_${id}`, JSON.stringify(products));
           return products;
        }
     }
