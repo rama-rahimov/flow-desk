@@ -12,6 +12,6 @@ export class ImageController {
     @UseGuards(JwtAuthGuard)
     upload(@Req() req:UserDTO,@UploadedFile() file: Express.Multer.File,
            @Body('type') type: string) {
-        return this.imageService.upload(file, type, req.user.id, req.user.avatar?.public_id);
+        return this.imageService.upload(file, type, req.user.id, req.user.company.id, req.user.avatar?.public_id);
     }
 }

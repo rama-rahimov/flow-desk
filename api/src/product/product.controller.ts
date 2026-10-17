@@ -16,9 +16,9 @@ export class ProductController {
         return this.productService.editProduct(product);
     }
 
-    @Delete('delete/:id')
-    delProduct(@Param('id', ParseIntPipe) id: number) {
-        return this.productService.deleteProduct(id);
+    @Delete('delete/:id/:companyId')
+    delProduct(@Param('id', ParseIntPipe) id: number, @Param('companyId', ParseIntPipe) companyId: number) {
+        return this.productService.deleteProduct(id, companyId);
     }
 
     @Get('all/:id')

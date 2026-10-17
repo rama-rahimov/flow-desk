@@ -10,6 +10,7 @@ import { CompanyEntity } from '../companies/entities/company.entity.js';
 import { CustomerEntity } from '../customers/entities/customer.entity.js';
 import {ConversationEntity} from "../chat/entities/conversation.entity.js";
 import {MessageEntity} from "../chat/entities/message.entity.js";
+import {RedisService} from "../redis/redis.service.js";
 
 @Injectable()
 export class AuthService {
@@ -24,7 +25,7 @@ export class AuthService {
     private readonly convDB: Repository<ConversationEntity>,
     @InjectRepository(MessageEntity)
     private readonly messagesDB: Repository<MessageEntity>,
-    private readonly jwt: JwtService
+    private readonly jwt: JwtService, private readonly redisService:RedisService
   ) {}
   async register(dataRegister: RegisterDto, visitorId) {
       const {
@@ -40,13 +41,12 @@ export class AuthService {
       } = dataRegister;
       const saltRounds = await bcrypt.genSalt(10);
       const findUserData = role_id === 1 ? { email, company: { id: companyId } } : { email };
-      const findUser = role_id === 2 ? await this.userDB.findOneBy(findUserData) : await this.customerDB.findOneBy(findUserData);
-      // if (role_id === 1) {
-      //   const findCompanyAdmin = await this.userDB.findOneBy(findUserData);
-      //   if (findCompanyAdmin?.id) {
-      //     throw new ConflictException('User already exists!!!');
-      //   }
-      // }
+      let findUser: UserEntity|CustomerEntity|null;
+      if(role_id === 2) {
+        findUser = await this.userDB.findOneBy(findUserData);
+      } else {
+        findUser = await this.customerDB.findOneBy(findUserData);
+      }
       if (findUser?.id) {
         throw new ConflictException('User already exists!');
       } else {
@@ -112,7 +112,7 @@ export class AuthService {
         if (!checkPassword) {
           throw new UnauthorizedException('Invalid email or password!');
         } else {
-          const payload = { sub: result.id, email: result.email };
+          const payload = { sub: result.id, email: result.email, companyId: result.company.id };
           return { success: true, data: this.jwt.sign(payload), role_id: user ? 2: 1 };
         }
       }

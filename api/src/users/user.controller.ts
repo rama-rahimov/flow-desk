@@ -11,7 +11,7 @@ export class UserController {
   @Patch('profile/edit')
   @UseGuards(JwtAuthGuard)
   editProfile(@Req() req:UserDTO, @Body() data: EditProfileDto) {
-    return this.usersService.editProfile(req.user.id, req.user.email, data)
+    return this.usersService.editProfile(req.user.id, req.user.email, req.user.company.id, data)
   }
 
   @Get('profile/current')

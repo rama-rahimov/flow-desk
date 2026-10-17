@@ -11,16 +11,16 @@ import {Not, Repository} from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {CreateCheckoutDto} from "./dto/create-checkout.dto.js";
 import {PaymentEntity} from "./entityties/payment.entity.js";
-import {UserDTO} from "../auth/dto/user.dto.js";
 import {UpdateSubDto} from "./dto/update_subscription.dto.js";
 import {Amount_dueDto} from "./dto/amount_due.dto.js";
+import {RedisService} from "../redis/redis.service.js";
 dotenv.config();
 
 @Injectable()
 export class PaymentsService {
   private stripe: Stripe;
   constructor(
-    private readonly stripeService: StripeService,
+    private readonly stripeService: StripeService, private readonly redisService: RedisService,
     @InjectRepository(CompanyEntity) private readonly companyDB: Repository<CompanyEntity>,
     @InjectRepository(PaymentEntity) private readonly paymentDB: Repository<PaymentEntity>
   ) {
@@ -60,6 +60,7 @@ export class PaymentsService {
           });
           if (findCompany?.id) {
             await this.companyDB.update({ id: Number(company_id) }, { status: CompanyStatus.ACTIVE });
+            await this.redisService.del(`company_${findCompany.link}`);
             if(typeof session.customer === 'string' &&  typeof session.currency === 'string') {
               const payment = this.paymentDB.create({payment_status:{id:1}
               ,company_id, price: Number((Number(session.amount_total)/100).toFixed(2)),
