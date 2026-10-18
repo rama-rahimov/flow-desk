@@ -67,7 +67,7 @@ function Employees() {
                 <h1>Employees</h1>
                 <div>
                     {
-                        form.td_check?<button className="nav_b" onClick={() => delEmployee(form.td_check)}>Back Dashboard</button>:''
+                        form.td_check?<button className="nav_b" onClick={() => delEmployee(form.td_check)}>Delete Employee</button>:''
                     }
                     <button className="nav_b" onClick={() => navigate(`/${companyLink}/dashboard`)}>Back Dashboard</button>
                     <button className="nav_b"  onClick={() => setIsModalOpen(true)}>+ Add employee</button>

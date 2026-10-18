@@ -1,10 +1,11 @@
 import {useNavigate, useParams} from 'react-router-dom';
-import {checkCompany, checkPayment, currentUser, findProducts} from "../../api.js";
+import {checkCompany, checkPayment, currentUser, findProducts, getEmployees} from "../../api.js";
 import {useEffect, useState} from "react";
 import './Home.css';
 
 export default function Dashboard() {
   const [company, setCompany] = useState({});
+  const [employeesCount, setEmployeesCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ productCount: 0, products: [] });
   const [checkPay, setCheckPay] = useState(false);
@@ -29,6 +30,8 @@ export default function Dashboard() {
       }
       const payment = await checkPayment();
       const user = await currentUser();
+      const employees = await getEmployees();
+      setEmployeesCount((employees || []).length);
       const products = await findProducts(user.company.id);
         if((payment || {}).payment_status?.id){
           setCheckPay(payment.payment_status.id !== 1);
@@ -68,7 +71,7 @@ export default function Dashboard() {
             {permission?<div className="card"
                   onClick={() => navigate(`/${companyLink}/employees`, {state: {company: companyLink}})}>
               <h3>Employees</h3>
-              <p>Amount 0</p>
+              <p>Amount {employeesCount}</p>
             </div>:''}
             <div className="card" onClick={() => navigate(`/${companyLink}/products`,{state:{products: form.products, companyId: company.id, companyName: companyLink }})}>
               <h3>Products</h3>
