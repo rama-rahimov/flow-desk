@@ -20,11 +20,23 @@ export class RedisService implements OnModuleDestroy {
         await this.redis.set(key, value);
     }
 
+    async lockSet(key, token, msecond=10000){
+      return this.redis.set(key, token, 'PX', msecond, 'NX');
+    }
+
     async get(key: string): Promise<any> {
         return this.redis.get(key);
     }
 
     async del(key: string) {
         return this.redis.del(key);
+    }
+
+    async eval(lockKey, lockToken){
+    const script = `if redis.call('GET', KEYS[1]) == ARGV[1] then
+    return redis.call('DEL', KEYS[1]) else 
+    return 0 
+    end `;
+   return this.redis.eval(script, 1, lockKey, lockToken);
     }
 }

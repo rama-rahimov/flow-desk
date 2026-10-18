@@ -38,16 +38,41 @@ export class ProductService {
        return { success: true };
     }
 
-    async findAll(id:number): Promise<ProductEntity[] | null> {
+    async findAll(id:number): Promise<ProductEntity[] | null | {message:string}> {
        const productAllJson = await this.redisService.get(`productAll_${id}`);
         console.log({ productAllJson });
        if(productAllJson){
            console.log("all product")
            return JSON.parse(productAllJson);
        }else {
-          const products =  await this.productDB.findBy({company:{id}});
-          await this.redisService.set(`productAll_${id}`, JSON.stringify(products));
-          return products;
+           const lockKey = `lock:productAll_${id}`;
+           const lockToken = crypto.randomUUID();
+           const acquired:string|null = await this.redisService.lockSet(lockKey, lockToken,10000);
+           if(acquired === "OK"){
+               try {
+                   const productRepAllJson = await this.redisService.get(`productAll_${id}`);
+                   if (productRepAllJson){
+                    console.log("if repeat all product");
+                    return JSON.parse(productRepAllJson);
+                  }
+                   console.log("else repeat all product")
+                   const products =  await this.productDB.findBy({company:{id}});
+                   await this.redisService.set(`productAll_${id}`, JSON.stringify(products));
+                   return products;
+               }finally {
+               console.log('delete lock')
+               await this.redisService.eval(lockKey, lockToken);
+               }
+           }else {
+               console.log("elseee");
+             await new Promise(resolve => setTimeout(resolve, 3000));
+               const prAllCash = await this.redisService.get(`productAll_${id}`);
+               if(prAllCash){
+                 console.log("prAllCash");
+                 return JSON.parse(prAllCash);
+               }
+              return {message: 'Please try late!'};
+           }
        }
     }
 
