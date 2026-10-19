@@ -99,7 +99,7 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto, ip = '') {
-      const checkRateLimit = this.redisService.addRateLimit(`rate-limit:login:ip:${ip}`,5, 60);
+      const checkRateLimit = await this.redisService.addRateLimit(`rate-limit:login:ip:${ip}`,5, 60);
        console.log({checkRateLimit});
       const customer = await this.customerDB.findOne({where:{email: loginDto.email}, select:{password:true, id: true,
       email: true, company:{id:true}}, relations:{company: true}});
