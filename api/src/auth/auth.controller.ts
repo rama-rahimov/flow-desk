@@ -15,8 +15,12 @@ export class AuthController {
   }
 
   @Post('/api/login')
-  login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  login(@Req() req: Request, @Body() loginDto: LoginDto) {
+    const ip = req.ip;
+    console.log('req.ip:', req.ip);
+    console.log('req.ips:', req.ips);
+    console.log('x-forwarded-for:', req.headers['x-forwarded-for']);
+    return this.authService.login(loginDto, ip);
   }
 
   @Post('/api/login_employment')

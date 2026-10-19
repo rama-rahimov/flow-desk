@@ -32,11 +32,34 @@ export class RedisService implements OnModuleDestroy {
         return this.redis.del(key);
     }
 
+    async addRateLimit(key: string, limit: number, windowSecond: number):Promise<boolean>{
+        const script = `
+        local count = redis.call('INCR', KEYS[1])
+        local limit = ARGV[1]
+        if count == 1 then 
+         redis.call('EXPIRE', KEYS[1], ARGV[2])
+         return 1 
+         end
+        if count > limit then 
+        return 0
+        else return 1
+        end`;
+        const count = await this.redis.incr(key);
+        if(count === 1){
+            await this.redis.expire(key, windowSecond);
+            return true;
+        }
+        if(count > limit){
+            return false;
+        }
+        return true;
+    }
+
     async eval(lockKey, lockToken){
     const script = `if redis.call('GET', KEYS[1]) == ARGV[1] then
     return redis.call('DEL', KEYS[1]) else 
     return 0 
     end `;
-   return this.redis.eval(script, 1, lockKey, lockToken);
+       return this.redis.eval(script, 1, lockKey, lockToken);
     }
 }
