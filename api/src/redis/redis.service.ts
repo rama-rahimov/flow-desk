@@ -35,11 +35,10 @@ export class RedisService implements OnModuleDestroy {
     async addRateLimit(key: string, limit: number, windowSecond: number):Promise<any>{
         const script = `
         local count = redis.call('INCR', KEYS[1])
-        local limit = ARGV[1]
+        local limit = tonumber(ARGV[1])
         if count == 1 then 
-         redis.call('EXPIRE', KEYS[1], ARGV[2])
-         return 1 
-         end
+         redis.call('EXPIRE', KEYS[1], tonumber(ARGV[2]))
+        end
         if count > limit then 
         return 0
         else return 1
