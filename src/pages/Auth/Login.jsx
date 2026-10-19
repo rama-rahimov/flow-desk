@@ -17,11 +17,11 @@ export default function Login() {
             return;
         }
         localStorage.setItem('token', result.data);
-        if(result.role_id === 2){
-            navigate(`/${companyLink}/dashboard`);
-        }else {
-            navigate(`/${companyLink}/head`);
-        }
+        // if(result.role_id === 2){
+        //     navigate(`/${companyLink}/dashboard`);
+        // }else {
+        //     navigate(`/${companyLink}/head`);
+        // }
     }
     return (
         <div className="auth-page">
