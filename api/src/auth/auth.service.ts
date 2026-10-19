@@ -99,6 +99,8 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto, ip = '') {
+      const checkRateLimit = this.redisService.addRateLimit(`rate-limit:login:ip:${ip}`,5, 60);
+       console.log({checkRateLimit});
       const customer = await this.customerDB.findOne({where:{email: loginDto.email}, select:{password:true, id: true,
       email: true, company:{id:true}}, relations:{company: true}});
       const user = await this.userDB.findOne({where:{email: loginDto.email}, select:{password:true, id:true,
@@ -108,10 +110,7 @@ export class AuthService {
       if (!result?.id) {
         throw new UnauthorizedException('Invalid email or password!');
       } else {
-        const checkPassword = await bcrypt.compare(
-          loginDto.password,
-          result.password,
-        );
+        const checkPassword = await bcrypt.compare(loginDto.password, result.password);
         if (!checkPassword) {
           throw new UnauthorizedException('Invalid email or password!');
         } else {
