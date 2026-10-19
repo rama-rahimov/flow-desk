@@ -32,7 +32,7 @@ export class RedisService implements OnModuleDestroy {
         return this.redis.del(key);
     }
 
-    async addRateLimit(key: string, limit: number, windowSecond: number):Promise<boolean>{
+    async addRateLimit(key: string, limit: number, windowSecond: number):Promise<any>{
         const script = `
         local count = redis.call('INCR', KEYS[1])
         local limit = ARGV[1]
@@ -44,15 +44,7 @@ export class RedisService implements OnModuleDestroy {
         return 0
         else return 1
         end`;
-        const count = await this.redis.incr(key);
-        if(count === 1){
-            await this.redis.expire(key, windowSecond);
-            return true;
-        }
-        if(count > limit){
-            return false;
-        }
-        return true;
+        return this.redis.eval(script, 1, key, limit, windowSecond);
     }
 
     async eval(lockKey, lockToken){
@@ -60,6 +52,6 @@ export class RedisService implements OnModuleDestroy {
     return redis.call('DEL', KEYS[1]) else 
     return 0 
     end `;
-       return this.redis.eval(script, 1, lockKey, lockToken);
+    return this.redis.eval(script, 1, lockKey, lockToken);
     }
 }
