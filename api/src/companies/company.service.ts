@@ -14,7 +14,7 @@ export class CompanyService {
   async checkCompany(link: string) {
       const redisCompanyJson = await this.redisService.get(`company_${link}`);
       console.log({redisCompanyJson});
-      if(redisCompanyJson){
+      if(redisCompanyJson !== null){
       console.log("in redisCompanyJson")
       const redisCompany = JSON.parse(redisCompanyJson);
       return { success: true, data: redisCompany };

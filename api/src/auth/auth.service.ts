@@ -98,7 +98,7 @@ export class AuthService {
       }
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, ip = '') {
       const customer = await this.customerDB.findOne({where:{email: loginDto.email}, select:{password:true, id: true,
       email: true, company:{id:true}}, relations:{company: true}});
       const user = await this.userDB.findOne({where:{email: loginDto.email}, select:{password:true, id:true,

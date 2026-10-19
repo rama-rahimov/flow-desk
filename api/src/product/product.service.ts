@@ -40,35 +40,28 @@ export class ProductService {
 
     async findAll(id:number): Promise<ProductEntity[] | null | {message:string}> {
        const productAllJson = await this.redisService.get(`productAll_${id}`);
-        console.log({ productAllJson });
-       if(productAllJson){
-           console.log("all product")
-           return JSON.parse(productAllJson);
+       if(productAllJson !== null){
+         return JSON.parse(productAllJson);
        }else {
            const lockKey = `lock:productAll_${id}`;
            const lockToken = crypto.randomUUID();
            const acquired:string|null = await this.redisService.lockSet(lockKey, lockToken,10000);
            if(acquired === "OK"){
                try {
-                   const productRepAllJson = await this.redisService.get(`productAll_${id}`);
-                   if (productRepAllJson){
-                    console.log("if repeat all product");
-                    return JSON.parse(productRepAllJson);
-                  }
-                   console.log("else repeat all product")
-                   const products =  await this.productDB.findBy({company:{id}});
-                   await this.redisService.set(`productAll_${id}`, JSON.stringify(products));
-                   return products;
+                 const productRepAllJson = await this.redisService.get(`productAll_${id}`);
+                 if (productRepAllJson !== null){
+                  return JSON.parse(productRepAllJson);
+                 }
+                  const products =  await this.productDB.findBy({company:{id}});
+                  await this.redisService.set(`productAll_${id}`, JSON.stringify(products));
+                  return products;
                }finally {
-               console.log('delete lock')
                await this.redisService.eval(lockKey, lockToken);
                }
            }else {
-               console.log("elseee");
              await new Promise(resolve => setTimeout(resolve, 3000));
                const prAllCash = await this.redisService.get(`productAll_${id}`);
-               if(prAllCash){
-                 console.log("prAllCash");
+               if(prAllCash !== null){
                  return JSON.parse(prAllCash);
                }
               return {message: 'Please try late!'};
@@ -78,8 +71,7 @@ export class ProductService {
 
     async findOne(id:number): Promise<ProductEntity|null> {
         const productJson = await this.redisService.get(`product_${id}`);
-        if(productJson){
-            console.log("one product");
+        if(productJson !== null){
             return JSON.parse(productJson);
         }else {
           const getProduct= await this.productDB.findOneBy({id});
