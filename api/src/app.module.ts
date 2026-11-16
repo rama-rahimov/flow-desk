@@ -27,11 +27,10 @@ dotenv.config();
     ChatModule,
     CustomerModule,
     DealModule,
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({isGlobal: true}),
     TypeOrmModule.forRoot(typeOrmConfig),
-    RedisModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService]
 })
 export class AppModule {}

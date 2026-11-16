@@ -5,17 +5,15 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    rawBody: true,
-  });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {rawBody: true});
   app.enableCors({ origin: 'http://localhost:5173', credentials: true });
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
-      transform: true,
+      transform: true
     }),
   );
   app.getHttpAdapter().getInstance().set('trust proxy', true);
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 await bootstrap();
