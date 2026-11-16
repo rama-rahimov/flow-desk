@@ -1,3 +1,3 @@
-export class objDto{
-    success: boolean;
+export class objDto {
+  success: boolean;
 }

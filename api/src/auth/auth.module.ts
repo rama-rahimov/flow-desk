@@ -11,23 +11,27 @@ import { RoleEntity } from '../users/entities/role.entity.js';
 import { AuthController } from './auth.controller.js';
 import { CompanyEntity } from '../companies/entities/company.entity.js';
 import { CustomerEntity } from '../customers/entities/customer.entity.js';
-import {ConversationEntity} from "../chat/entities/conversation.entity.js";
-import {MessageEntity} from "../chat/entities/message.entity.js";
-import {RedisService} from "../redis/redis.service.js";
-import {RedisModule} from "../redis/redis.module.js";
+import { ConversationEntity } from '../chat/entities/conversation.entity.js';
+import { MessageEntity } from '../chat/entities/message.entity.js';
+import { RedisService } from '../redis/redis.service.js';
+import { RedisModule } from '../redis/redis.module.js';
 dotenv.config();
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      UserEntity, RoleEntity,
-      CompanyEntity, CustomerEntity,
-      ConversationEntity, MessageEntity
+      UserEntity,
+      RoleEntity,
+      CompanyEntity,
+      CustomerEntity,
+      ConversationEntity,
+      MessageEntity,
     ]),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '7weeks' },
     }),
-    PassportModule, RedisModule
+    PassportModule,
+    RedisModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, JwtAuthGuard, RedisService],

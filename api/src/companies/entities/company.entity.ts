@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 import { CustomerEntity } from '../../customers/entities/customer.entity.js';
 import { UserEntity } from '../../users/entities/user.entity.js';
-import {ProductEntity} from "../../product/entities/product.entity.js";
-import {ConversationEntity} from "../../chat/entities/conversation.entity.js";
+import { ProductEntity } from '../../product/entities/product.entity.js';
+import { ConversationEntity } from '../../chat/entities/conversation.entity.js';
 
 export enum CompanyStatus {
   ACTIVE = 'ACTIVE',

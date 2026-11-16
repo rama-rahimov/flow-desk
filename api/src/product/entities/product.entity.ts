@@ -5,15 +5,16 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-  Relation, ManyToOne,
+  Relation,
+  ManyToOne,
 } from 'typeorm';
 import { DealEntity } from '../../deal/entities/deal.entity.js';
-import {CompanyEntity} from "../../companies/entities/company.entity.js";
-import {ProductMediaEntity} from "./product_media.entity.js";
+import { CompanyEntity } from '../../companies/entities/company.entity.js';
+import { ProductMediaEntity } from './product_media.entity.js';
 enum ProductCurrency {
   USD = 'USD',
   EUR = 'EUR',
-  AZN = 'AZN'
+  AZN = 'AZN',
 }
 @Entity('product')
 export class ProductEntity {
@@ -26,7 +27,7 @@ export class ProductEntity {
   @Column({ type: 'text' })
   description: string;
 
-  @Column({ type: 'decimal', scale:2 })
+  @Column({ type: 'decimal', scale: 2 })
   price: number;
 
   @Column({
@@ -39,11 +40,14 @@ export class ProductEntity {
   @OneToMany(() => DealEntity, (deal_entity) => deal_entity.product)
   deal_entities: Relation<DealEntity>[];
 
-  @OneToMany(() => ProductMediaEntity, (product_medias) => product_medias.product)
+  @OneToMany(
+    () => ProductMediaEntity,
+    (product_medias) => product_medias.product,
+  )
   product_medias: Relation<ProductMediaEntity>[];
 
   @ManyToOne(() => CompanyEntity, (company) => company.products)
-  company: Relation<CompanyEntity>
+  company: Relation<CompanyEntity>;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

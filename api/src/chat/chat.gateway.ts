@@ -1,22 +1,35 @@
-import {ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer} from "@nestjs/websockets";
-import {Server, Socket} from "socket.io";
-import {parse} from "cookie";
+import {
+  ConnectedSocket,
+  MessageBody,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
+import { parse } from 'cookie';
 import 'dotenv/config';
-import jwt from "jsonwebtoken";
-import {ChatService} from "./chat.service.js";
-import {MessageDto} from "./dto/message.dto.js";
-import * as process from "node:process";
+import jwt from 'jsonwebtoken';
+import { ChatService } from './chat.service.js';
+import { MessageDto } from './dto/message.dto.js';
+import * as process from 'node:process';
+
+interface CustomSocket extends Socket {
+  data: {
+    senderId?: string;
+    visitorId?: string;
+  };
+}
 
 @WebSocketGateway({
-    cors:{
-        origin:'http://localhost:5173',
-        credentials:true,
-    }
+  cors: {
+    origin: 'http://localhost:5173',
+    credentials: true,
+  },
 })
 export class EventsGateway {
-    constructor(private readonly chatService:ChatService) {}
-    @WebSocketServer()
-    server: Server;
+  constructor(private readonly chatService: ChatService) {}
+  @WebSocketServer()
+  server: Server;
 
    async handleConnection(client: Socket) {
        const cookies = parse(client.handshake.headers.cookie ?? '');
@@ -29,10 +42,17 @@ export class EventsGateway {
        client.data.visitorId = cookies.visitorId;
     }
 
-   @SubscribeMessage('message')
-   async handleEvent(@MessageBody() data:MessageDto, @ConnectedSocket() client:Socket){
-     const result= await this.chatService.messageHandler({...data, visitorId: client.data.visitorId, senderId:client.data.senderId});
-     client.join(String(result.conversationId));
-     this.server.to(String(result.conversationId)).emit('message',result);
-    }
+  @SubscribeMessage('message')
+  async handleEvent(
+    @MessageBody() data: MessageDto,
+    @ConnectedSocket() client: Socket,
+  ) {
+    const result = await this.chatService.messageHandler({
+      ...data,
+      visitorId: client.data.visitorId,
+      senderId: client.data.senderId,
+    });
+    client.join(String(result.conversationId));
+    this.server.to(String(result.conversationId)).emit('message', result);
+  }
 }

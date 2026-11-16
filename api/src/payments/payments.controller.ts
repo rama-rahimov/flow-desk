@@ -5,15 +5,18 @@ import {
   Post,
   RawBodyRequest,
   Req,
-  Headers, Get, UseGuards, Put,
+  Headers,
+  Get,
+  UseGuards,
+  Put,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service.js';
 import { CreateCheckoutDto } from './dto/create-checkout.dto.js';
 import dotenv from 'dotenv';
 import Stripe from 'stripe';
-import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard.js";
-import {UpdateSubDto} from "./dto/update_subscription.dto.js";
-import {Amount_dueDto} from "./dto/amount_due.dto.js";
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { UpdateSubDto } from './dto/update_subscription.dto.js';
+import { Amount_dueDto } from './dto/amount_due.dto.js';
 dotenv.config();
 
 @Controller('api/payments')
@@ -24,7 +27,7 @@ export class PaymentsController {
   }
   @Post('create-checkout')
   createCheckout(@Body() data: CreateCheckoutDto) {
-    console.log({data});
+    console.log({ data });
     return this.paymentService.createCheckout(data);
   }
 
@@ -34,7 +37,7 @@ export class PaymentsController {
     @Req() req: RawBodyRequest<Request>,
     @Headers('stripe-signature') signature: string,
   ) {
-    console.log({rawBody: req.rawBody, signature});
+    console.log({ rawBody: req.rawBody, signature });
     return this.paymentService.handleWebhook(req.rawBody!, signature);
   }
 

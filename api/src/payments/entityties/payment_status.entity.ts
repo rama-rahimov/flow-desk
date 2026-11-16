@@ -1,8 +1,14 @@
-import {Column, Entity, OneToMany, PrimaryGeneratedColumn, Relation} from "typeorm";
-import {PaymentEntity} from "./payment.entity.js";
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
+import { PaymentEntity } from './payment.entity.js';
 
 @Entity('payment_status')
-export class Payment_statusEntity{
+export class Payment_statusEntity {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()

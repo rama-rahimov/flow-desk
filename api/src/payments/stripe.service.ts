@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Stripe } from 'stripe';
 import dotenv from 'dotenv';
 import * as process from 'node:process';
-import {CreateCheckoutDto} from "./dto/create-checkout.dto.js";
-import {UpdateSubDto} from "./dto/update_subscription.dto.js";
-import {Amount_dueDto} from "./dto/amount_due.dto.js";
+import { CreateCheckoutDto } from './dto/create-checkout.dto.js';
+import { UpdateSubDto } from './dto/update_subscription.dto.js';
+import { Amount_dueDto } from './dto/amount_due.dto.js';
 dotenv.config();
 
 @Injectable()
@@ -14,7 +14,7 @@ export class StripeService {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   }
 
-  async createCheckoutSession(data:CreateCheckoutDto) {
+  async createCheckoutSession(data: CreateCheckoutDto) {
     return await this.stripe.checkout.sessions.create({
       mode: 'subscription',
       line_items: [
@@ -24,7 +24,7 @@ export class StripeService {
             product_data: {
               name: 'FlowDesk subscription',
             },
-            unit_amount: data.price*100,
+            unit_amount: data.price * 100,
             recurring: {
               interval: 'month',
             },
@@ -33,8 +33,8 @@ export class StripeService {
         },
       ],
       metadata: {
-        companyId:data.companyId,
-        employeesLimit: data.employeesLimit
+        companyId: data.companyId,
+        employeesLimit: data.employeesLimit,
       },
       success_url: 'http://localhost:5173/payment/success',
       cancel_url: 'http://localhost:5173/payment/cancel',
@@ -42,36 +42,45 @@ export class StripeService {
   }
 
   async updateSub(data: UpdateSubDto) {
-    console.log({data});
-    return await this.stripe.subscriptions.update(data.sub_id, {cancel_at_period_end: data.cancel_at_period_end,
-      metadata:{paymentId: data.paymentId, cancelAtPeriodEnd: data.cancel_at_period_end?1:0,
-        employee_limit:data.employee_limit, price:data.price}});
+    console.log({ data });
+    return await this.stripe.subscriptions.update(data.sub_id, {
+      cancel_at_period_end: data.cancel_at_period_end,
+      metadata: {
+        paymentId: data.paymentId,
+        cancelAtPeriodEnd: data.cancel_at_period_end ? 1 : 0,
+        employee_limit: data.employee_limit,
+        price: data.price,
+      },
+    });
   }
 
-  async retrieve(sessionId:string) {
+  async retrieve(sessionId: string) {
     return await this.stripe.subscriptions.retrieve(sessionId);
   }
 
-  async amount_due(data:Amount_dueDto){
+  async amount_due(data: Amount_dueDto) {
     const subscription = await this.retrieve(data.subscription_id);
     const price = await this.stripe.prices.create({
       currency: 'usd',
-      unit_amount: Number(data.price)*100,
-      recurring:{
+      unit_amount: Number(data.price) * 100,
+      recurring: {
         interval: 'month',
       },
-      product_data:{
+      product_data: {
         name: 'FlowDesk subscription',
-      }
+      },
     });
-    console.log({price, subscription});
+    console.log({ price, subscription });
     return await this.stripe.invoices.createPreview({
-      subscription:data.subscription_id,
-      subscription_details:{
-        items:[{
-          id: subscription.items.data[0].id, price: price.id
-        }]
-      }
-    })
+      subscription: data.subscription_id,
+      subscription_details: {
+        items: [
+          {
+            id: subscription.items.data[0].id,
+            price: price.id,
+          },
+        ],
+      },
+    });
   }
 }

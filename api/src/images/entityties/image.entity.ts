@@ -1,9 +1,11 @@
-import {ProductMediaEntity} from "../../product/entities/product_media.entity.js";
+import { ProductMediaEntity } from '../../product/entities/product_media.entity.js';
 import {
   Column,
   CreateDateColumn,
-  Entity, OneToMany,
-  PrimaryGeneratedColumn, Relation,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 
 @Entity('media')
@@ -29,7 +31,10 @@ export class MediaEntity {
   @Column({ type: 'integer' })
   size: number;
 
-  @OneToMany(() => ProductMediaEntity, (product_medias) => product_medias.product)
+  @OneToMany(
+    () => ProductMediaEntity,
+    (product_medias) => product_medias.product,
+  )
   product_medias: Relation<ProductMediaEntity>[];
 
   @CreateDateColumn()

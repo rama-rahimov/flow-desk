@@ -9,10 +9,10 @@ import { ConfigModule } from '@nestjs/config';
 import { CompanyModule } from './companies/company.module.js';
 import { PaymentsModule } from './payments/payments.module.js';
 import dotenv from 'dotenv';
-import {ProductModule} from "./product/product.module.js";
-import {ImageModule} from "./images/image.module.js";
-import {CustomerModule} from "./customers/customer.module.js";
-import {ChatModule} from "./chat/chat.module.js";
+import { ProductModule } from './product/product.module.js';
+import { ImageModule } from './images/image.module.js';
+import { CustomerModule } from './customers/customer.module.js';
+import { ChatModule } from './chat/chat.module.js';
 import { RedisModule } from './redis/redis.module.js';
 dotenv.config();
 
@@ -27,10 +27,10 @@ dotenv.config();
     ChatModule,
     CustomerModule,
     DealModule,
-    ConfigModule.forRoot({isGlobal: true}),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot(typeOrmConfig),
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [AppService],
 })
 export class AppModule {}

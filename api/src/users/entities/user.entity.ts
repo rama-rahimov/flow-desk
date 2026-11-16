@@ -7,12 +7,13 @@ import {
   OneToMany,
   ManyToOne,
   Relation,
-    JoinColumn, OneToOne
+  JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import { DealEntity } from '../../deal/entities/deal.entity.js';
 import { CompanyEntity } from '../../companies/entities/company.entity.js';
-import {MediaEntity} from "../../images/entityties/image.entity.js";
-import {ConversationEntity} from "../../chat/entities/conversation.entity.js";
+import { MediaEntity } from '../../images/entityties/image.entity.js';
+import { ConversationEntity } from '../../chat/entities/conversation.entity.js';
 
 @Entity('users')
 export class UserEntity {

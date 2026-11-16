@@ -3,11 +3,11 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import dotenv from 'dotenv';
 import { ConfigService } from '@nestjs/config';
-import {InjectRepository} from "@nestjs/typeorm";
-import {UserEntity} from "../../users/entities/user.entity.js";
-import {Repository} from "typeorm";
-import {CustomerEntity} from "../../customers/entities/customer.entity.js";
-import {RedisService} from "../../redis/redis.service.js";
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from '../../users/entities/user.entity.js';
+import { Repository } from 'typeorm';
+import { CustomerEntity } from '../../customers/entities/customer.entity.js';
+import { RedisService } from '../../redis/redis.service.js';
 dotenv.config();
 
 interface JwtPayload {
@@ -17,30 +17,74 @@ interface JwtPayload {
 }
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(configService: ConfigService,
-    @InjectRepository(UserEntity) private readonly userDB: Repository<UserEntity>,
-    @InjectRepository(CustomerEntity) private readonly customerDB: Repository<CustomerEntity>, private readonly redisService: RedisService) {
+  constructor(
+    configService: ConfigService,
+    @InjectRepository(UserEntity)
+    private readonly userDB: Repository<UserEntity>,
+    @InjectRepository(CustomerEntity)
+    private readonly customerDB: Repository<CustomerEntity>,
+    private readonly redisService: RedisService,
+  ) {
     super({
       secretOrKey: configService.getOrThrow<string>('JWT_SECRET'),
       ignoreExpiration: false,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
   }
-  async validate(payload: JwtPayload) {
-    const jwtUserJson = await this.redisService.get(`userId_${payload.sub}&email_${payload.email}&companyId_${payload.companyId}`);
-    console.log({jwtUserJson});
-    if (jwtUserJson !== null){
-      console.log("jwtUserJsonnnnn");
-      const user = JSON.parse(jwtUserJson);
-      return user;
-    }else {
-      const user = await this.userDB.findOne({where:{id: payload.sub, email:payload.email, company:{id:payload.companyId}}, select:{
-          firstName:true, lastName:true, role_id:true, avatar:{id:true, url:true, public_id:true},
-          company:{link:true, employments_count:true, id:true}, email:true, id:true
-        }, relations: {avatar: true, company: true}}) ||  await this.customerDB.findOne({where:{id: payload.sub, email: payload.email, company:{id:payload.companyId}}, select:{
-          firstName:true, lastName:true, company:{link:true, employments_count:true, id:true}, email:true, id:true
-        }, relations: {company: true}});
-      await this.redisService.set(`userId_${payload.sub}&email_${payload.email}&companyId_${payload.companyId}`, JSON.stringify(user));
+  async validate(payload: JwtPayload): Promise<any> {
+    const jwtUserJson: UserEntity | CustomerEntity | null =
+      (await this.redisService.get(
+        `userId_${payload.sub}&email_${payload.email}&companyId_${payload.companyId}`,
+      ))
+        ? JSON.parse(
+            await this.redisService.get(
+              `userId_${payload.sub}&email_${payload.email}&companyId_${payload.companyId}`,
+            ),
+          )
+        : null;
+    console.log({ jwtUserJson });
+    if (jwtUserJson !== null) {
+      return jwtUserJson;
+    } else {
+      const user: UserEntity | CustomerEntity | null =
+        (await this.userDB.findOne({
+          where: {
+            id: payload.sub,
+            email: payload.email,
+            company: { id: payload.companyId },
+          },
+          select: {
+            firstName: true,
+            lastName: true,
+            role_id: true,
+            avatar: { id: true, url: true, public_id: true },
+            company: { link: true, employments_count: true, id: true },
+            email: true,
+            id: true,
+          },
+          relations: { avatar: true, company: true },
+        })) ||
+        (await this.customerDB.findOne({
+          where: {
+            id: payload.sub,
+            email: payload.email,
+            company: { id: payload.companyId },
+          },
+          select: {
+            firstName: true,
+            lastName: true,
+            company: { link: true, employments_count: true, id: true },
+            email: true,
+            id: true,
+          },
+          relations: { company: true },
+        }));
+      if (user?.id) {
+        await this.redisService.set(
+          `userId_${payload.sub}&email_${payload.email}&companyId_${payload.companyId}`,
+          JSON.stringify(user),
+        );
+      }
       return user;
     }
   }

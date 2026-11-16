@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { CompanyEntity } from '../../companies/entities/company.entity.js';
 import { DealEntity } from '../../deal/entities/deal.entity.js';
-import {ConversationEntity} from "../../chat/entities/conversation.entity.js";
+import { ConversationEntity } from '../../chat/entities/conversation.entity.js';
 
 @Entity('customers')
 export class CustomerEntity {
