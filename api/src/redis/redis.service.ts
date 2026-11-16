@@ -9,7 +9,7 @@ export class RedisService implements OnModuleDestroy {
     private readonly redis: Redis;
     constructor() {
       const prodRedis = process.env.REDIS_URL;
-      prodRedis ? this.redis = new Redis(prodRedis) : this.redis = new Redis({ host: '127.0.0.1', port: 6379});
+      prodRedis ? this.redis = new Redis(prodRedis) : this.redis = new Redis({host: 'redis', port: 6379});
     }
 
     async onModuleDestroy() {

@@ -4,7 +4,7 @@ import { LoginDto } from './dto/login.dto.js';
 import { UserEntity } from '../users/entities/user.entity.js';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import {ConflictException, Injectable, UnauthorizedException} from '@nestjs/common';
+import {ConflictException, HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CompanyEntity } from '../companies/entities/company.entity.js';
 import { CustomerEntity } from '../customers/entities/customer.entity.js';
@@ -100,24 +100,27 @@ export class AuthService {
 
   async login(loginDto: LoginDto, ip = '') {
       const checkRateLimit = await this.redisService.addRateLimit(`rate-limit:login:ip:${ip}`,5, 60);
-       console.log({checkRateLimit});
-      const customer = await this.customerDB.findOne({where:{email: loginDto.email}, select:{password:true, id: true,
-      email: true, company:{id:true}}, relations:{company: true}});
-      const user = await this.userDB.findOne({where:{email: loginDto.email}, select:{password:true, id:true,
-      email: true, company:{id:true}}, relations:{company: true}});
-      const result = customer ?? user;
-    console.log({result});
-      if (!result?.id) {
-        throw new UnauthorizedException('Invalid email or password!');
-      } else {
-        const checkPassword = await bcrypt.compare(loginDto.password, result.password);
-        if (!checkPassword) {
-          throw new UnauthorizedException('Invalid email or password!');
-        } else {
-          const payload = { sub: result.id, email: result.email, companyId: result.company?.id };
-          return { success: true, data: this.jwt.sign(payload), role_id: user ? 2: 1 };
-        }
-      }
+       if(Number(checkRateLimit)){
+         const customer = await this.customerDB.findOne({where:{email: loginDto.email}, select:{password:true, id: true,
+             email: true, company:{id:true}}, relations:{company: true}});
+         const user = await this.userDB.findOne({where:{email: loginDto.email}, select:{password:true, id:true,
+             email: true, company:{id:true}}, relations:{company: true}});
+         const result = customer ?? user;
+         console.log({result});
+         if (!result?.id) {
+           throw new UnauthorizedException('Invalid email or password!');
+         } else {
+           const checkPassword = await bcrypt.compare(loginDto.password, result.password);
+           if (!checkPassword) {
+             throw new UnauthorizedException('Invalid email or password!');
+           } else {
+             const payload = { sub: result.id, email: result.email, companyId: result.company?.id };
+             return { success: true, data: this.jwt.sign(payload), role_id: user ? 2: 1 };
+           }
+         }
+       }else {
+         throw new HttpException('You can make a maximum of 5 login attempts per minute.', HttpStatus.TOO_MANY_REQUESTS);
+       }
   }
 
   async loginEmployment(loginDto: LoginDto) {
@@ -125,10 +128,7 @@ export class AuthService {
       if (!user?.id) {
         throw new UnauthorizedException('Invalid email or password!');
       } else {
-        const checkPassword = await bcrypt.compare(
-          loginDto.password,
-          user.password,
-        );
+        const checkPassword = await bcrypt.compare(loginDto.password, user.password);
         if (!checkPassword) {
           throw new UnauthorizedException('Invalid email or password!');
         } else {
