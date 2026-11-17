@@ -16,7 +16,10 @@ export class CompanyService {
     console.log({ redisCompanyJson });
     if (redisCompanyJson !== null) {
       console.log('in redisCompanyJson');
-      const redisCompany = JSON.parse(redisCompanyJson);
+      const redisCompany = JSON.parse(redisCompanyJson) as Pick<
+        CompanyEntity,
+        'id' | 'link' | 'name' | 'employments_count'
+      >;
       return { success: true, data: redisCompany };
     } else {
       const company = await this.companyDB.findOne({

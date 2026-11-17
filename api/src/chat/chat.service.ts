@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConversationEntity } from './entities/conversation.entity.js';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { MessageEntity, SenderType } from './entities/message.entity.js';
 import { MessageDto } from './dto/message.dto.js';
 import { CustomerEntity } from '../customers/entities/customer.entity.js';
@@ -35,7 +35,7 @@ export class ChatService {
         conversationId: data.conversationId,
       };
     } else {
-      const obj = {};
+      const obj: FindOptionsWhere<ConversationEntity> = {};
       if (data.senderId) {
         const customer = await this.customerDB.findOneBy({
           id: Number(data.senderId),
@@ -43,9 +43,9 @@ export class ChatService {
         if (!customer) {
           throw new NotFoundException('No such customer');
         }
-        obj['customer'] = { id: customer?.id };
+        obj.customer = { id: customer?.id };
       } else {
-        obj['clientId'] = data.visitorId;
+        obj.clientId = data.visitorId;
       }
       console.log({ obj, data });
       const conversation = await this.conversationDB.findOneBy({
@@ -109,11 +109,11 @@ export class ChatService {
         })),
       };
     } else {
-      const obj = { company: { link } };
+      const obj: FindOptionsWhere<ConversationEntity> = { company: { link } };
       if (senderId) {
-        obj['customer'] = { id: senderId };
+        obj.customer = { id: senderId };
       } else {
-        obj['clientId'] = visitorId;
+        obj.clientId = visitorId;
       }
       const conversation = await this.conversationDB.findOneBy(obj);
       if (conversation?.id) {
@@ -147,13 +147,13 @@ export class ChatService {
     });
   }
 
-  async getConversation(link: string, senderId: number, visitorId) {
-    const obj = { company: { link } };
+  async getConversation(link: string, senderId: number, visitorId: string) {
+    const obj: FindOptionsWhere<ConversationEntity> = { company: { link } };
     console.log({ visitorId, senderId });
     if (senderId) {
-      obj['customer'] = { id: senderId };
+      obj.customer = { id: senderId };
     } else if (visitorId) {
-      obj['clientId'] = visitorId;
+      obj.clientId = visitorId;
     } else {
       throw new NotFoundException('No visitor');
     }

@@ -14,6 +14,7 @@ import { PaymentEntity } from './entityties/payment.entity.js';
 import { UpdateSubDto } from './dto/update_subscription.dto.js';
 import { Amount_dueDto } from './dto/amount_due.dto.js';
 import { RedisService } from '../redis/redis.service.js';
+import { UserDTO } from '../auth/dto/user.dto.js';
 dotenv.config();
 
 @Injectable()
@@ -149,7 +150,7 @@ export class PaymentsService {
     };
   }
 
-  async checkPayment(data) {
+  async checkPayment(data: UserDTO) {
     console.log({ data: data.user });
     const resultP = await this.paymentDB.findOne({
       where: {

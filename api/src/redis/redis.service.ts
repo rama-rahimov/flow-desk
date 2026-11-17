@@ -9,24 +9,28 @@ export class RedisService implements OnModuleDestroy {
   private readonly redis: Redis;
   constructor() {
     const prodRedis = process.env.REDIS_URL;
-    prodRedis
-      ? (this.redis = new Redis(prodRedis))
-      : (this.redis = new Redis({ host: 'redis', port: 6379 }));
+    this.redis = prodRedis
+      ? new Redis(prodRedis)
+      : new Redis({ host: 'redis', port: 6379 });
   }
 
   async onModuleDestroy() {
     await this.redis.quit();
   }
 
-  async set(key: string, value: any): Promise<void> {
+  async set(key: string, value: string): Promise<void> {
     await this.redis.set(key, value);
   }
 
-  async lockSet(key, token, msecond = 10000) {
+  async lockSet(
+    key: string,
+    token: string,
+    msecond = 10000,
+  ): Promise<string | null> {
     return this.redis.set(key, token, 'PX', msecond, 'NX');
   }
 
-  async get(key: string): Promise<any> {
+  async get(key: string): Promise<string | null> {
     return this.redis.get(key);
   }
 
@@ -38,7 +42,7 @@ export class RedisService implements OnModuleDestroy {
     key: string,
     limit: number,
     windowSecond: number,
-  ): Promise<any> {
+  ): Promise<number> {
     const script = `
         local count = redis.call('INCR', KEYS[1])
         local limit = tonumber(ARGV[1])
@@ -49,14 +53,14 @@ export class RedisService implements OnModuleDestroy {
         return 0
         else return 1
         end`;
-    return this.redis.eval(script, 1, key, limit, windowSecond);
+    return Number(await this.redis.eval(script, 1, key, limit, windowSecond));
   }
 
-  async eval(lockKey, lockToken) {
+  async eval(lockKey: string, lockToken: string): Promise<number> {
     const script = `if redis.call('GET', KEYS[1]) == ARGV[1] then
     return redis.call('DEL', KEYS[1]) else 
     return 0 
     end `;
-    return this.redis.eval(script, 1, lockKey, lockToken);
+    return Number(await this.redis.eval(script, 1, lockKey, lockToken));
   }
 }

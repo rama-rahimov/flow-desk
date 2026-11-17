@@ -19,7 +19,7 @@ export class ChatController {
     @Query('senderId') senderId: string,
     @Query('conversationId') conversationId: string,
   ) {
-    const visitorId: string = req.cookies.visitorId;
+    const visitorId = (req.cookies as Record<string, string>).visitorId;
     return this.chatService.getAllMessages(
       companyLink,
       Number(senderId),
@@ -37,7 +37,7 @@ export class ChatController {
     @Query('companyLink') companyLink: string,
     @Query('senderId', ParseIntPipe) senderId: number,
   ) {
-    const visitorId: string = req.cookies.visitorId;
+    const visitorId = (req.cookies as Record<string, string>).visitorId;
     return this.chatService.getConversation(companyLink, senderId, visitorId);
   }
   @Get('admin/conversations/user/:userId/:conversationId')

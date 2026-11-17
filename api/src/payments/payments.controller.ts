@@ -17,6 +17,7 @@ import Stripe from 'stripe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { UpdateSubDto } from './dto/update_subscription.dto.js';
 import { Amount_dueDto } from './dto/amount_due.dto.js';
+import { UserDTO } from '../auth/dto/user.dto.js';
 dotenv.config();
 
 @Controller('api/payments')
@@ -44,7 +45,7 @@ export class PaymentsController {
   @Get('check')
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
-  checkPayment(@Req() req: Request) {
+  checkPayment(@Req() req: UserDTO) {
     return this.paymentService.checkPayment(req);
   }
 

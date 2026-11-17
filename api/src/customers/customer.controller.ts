@@ -5,7 +5,8 @@ import { randomUUID } from 'crypto';
 export class CustomerController {
   @Get()
   setCookie(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    let visitorId = req.cookies.visitorId;
+    let visitorId = (req.cookies as Record<string, string | undefined>)
+      .visitorId;
     if (!visitorId) {
       visitorId = randomUUID();
       res.cookie('visitorId', visitorId, {

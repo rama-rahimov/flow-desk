@@ -34,7 +34,7 @@ export class AuthService {
     private readonly jwt: JwtService,
     private readonly redisService: RedisService,
   ) {}
-  async register(dataRegister: RegisterDto, visitorId) {
+  async register(dataRegister: RegisterDto, visitorId: string) {
     const {
       firstName,
       lastName,

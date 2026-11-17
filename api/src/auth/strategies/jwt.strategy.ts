@@ -31,17 +31,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
   }
-  async validate(payload: JwtPayload): Promise<any> {
-    const jwtUserJson: UserEntity | CustomerEntity | null =
-      (await this.redisService.get(
-        `userId_${payload.sub}&email_${payload.email}&companyId_${payload.companyId}`,
-      ))
-        ? JSON.parse(
-            await this.redisService.get(
-              `userId_${payload.sub}&email_${payload.email}&companyId_${payload.companyId}`,
-            ),
-          )
-        : null;
+  async validate(
+    payload: JwtPayload,
+  ): Promise<UserEntity | CustomerEntity | null> {
+    const cacheKey = `userId_${payload.sub}&email_${payload.email}&companyId_${payload.companyId}`;
+    const cachedUser = await this.redisService.get(cacheKey);
+    const jwtUserJson: UserEntity | CustomerEntity | null = cachedUser
+      ? (JSON.parse(cachedUser) as UserEntity | CustomerEntity)
+      : null;
     console.log({ jwtUserJson });
     if (jwtUserJson !== null) {
       return jwtUserJson;
@@ -80,10 +77,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           relations: { company: true },
         }));
       if (user?.id) {
-        await this.redisService.set(
-          `userId_${payload.sub}&email_${payload.email}&companyId_${payload.companyId}`,
-          JSON.stringify(user),
-        );
+        await this.redisService.set(cacheKey, JSON.stringify(user));
       }
       return user;
     }

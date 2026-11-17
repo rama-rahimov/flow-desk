@@ -26,17 +26,15 @@ export class ProductService {
 
   async editProduct(product: editProductDto): Promise<objDto> {
     const { id, ...pr } = product;
-    const obj = {};
-    for (const idKey in pr) {
-      if (
-        Object.prototype.hasOwnProperty.call(pr, idKey) &&
-        pr[idKey] !== undefined &&
-        !!pr[idKey]
-      ) {
-        obj[idKey] = pr[idKey];
+    const obj: Partial<ProductEntity> = {};
+    const prRecord = pr as Record<string, unknown>;
+    for (const key of Object.keys(prRecord)) {
+      const value = prRecord[key];
+      if (value !== undefined && Boolean(value)) {
+        (obj as Record<string, unknown>)[key] = value;
       }
     }
-    await this.productDB.update({ id }, { ...obj });
+    await this.productDB.update({ id }, obj);
     await this.redisService.del(`product_${id}`);
     return { success: true };
   }
@@ -53,7 +51,7 @@ export class ProductService {
   ): Promise<ProductEntity[] | null | { message: string }> {
     const productAllJson = await this.redisService.get(`productAll_${id}`);
     if (productAllJson !== null) {
-      return JSON.parse(productAllJson);
+      return JSON.parse(productAllJson) as ProductEntity[];
     } else {
       const lockKey = `lock:productAll_${id}`;
       const lockToken = crypto.randomUUID();
@@ -68,7 +66,7 @@ export class ProductService {
             `productAll_${id}`,
           );
           if (productRepAllJson !== null) {
-            return JSON.parse(productRepAllJson);
+            return JSON.parse(productRepAllJson) as ProductEntity[];
           }
           const products = await this.productDB.findBy({ company: { id } });
           await this.redisService.set(
@@ -83,7 +81,7 @@ export class ProductService {
         await new Promise((resolve) => setTimeout(resolve, 3000));
         const prAllCash = await this.redisService.get(`productAll_${id}`);
         if (prAllCash !== null) {
-          return JSON.parse(prAllCash);
+          return JSON.parse(prAllCash) as ProductEntity[];
         }
         return { message: 'Please try late!' };
       }
@@ -93,7 +91,7 @@ export class ProductService {
   async findOne(id: number): Promise<ProductEntity | null> {
     const productJson = await this.redisService.get(`product_${id}`);
     if (productJson !== null) {
-      return JSON.parse(productJson);
+      return JSON.parse(productJson) as ProductEntity;
     } else {
       const getProduct = await this.productDB.findOneBy({ id });
       if (getProduct?.id) {

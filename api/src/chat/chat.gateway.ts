@@ -31,28 +31,30 @@ export class EventsGateway {
   @WebSocketServer()
   server: Server;
 
-   async handleConnection(client: Socket) {
-       const cookies = parse(client.handshake.headers.cookie ?? '');
-       const token = client.handshake.auth.token;
-       console.log({token, jwt: process.env.JWT_SECRET});
-       if (typeof token === 'string' && process.env.JWT_SECRET) {
-         const data = jwt.verify(token, process.env.JWT_SECRET);
-         client.data.senderId = data.sub;
-       }
-       client.data.visitorId = cookies.visitorId;
+  handleConnection(client: CustomSocket) {
+    const cookies = parse(client.handshake.headers.cookie ?? '');
+    const token = client.handshake.auth.token as unknown;
+    console.log({ token, jwt: process.env.JWT_SECRET });
+    if (typeof token === 'string' && process.env.JWT_SECRET) {
+      const data = jwt.verify(token, process.env.JWT_SECRET);
+      if (typeof data !== 'string' && typeof data.sub === 'string') {
+        client.data.senderId = data.sub;
+      }
     }
+    client.data.visitorId = cookies.visitorId;
+  }
 
   @SubscribeMessage('message')
   async handleEvent(
     @MessageBody() data: MessageDto,
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: CustomSocket,
   ) {
     const result = await this.chatService.messageHandler({
       ...data,
       visitorId: client.data.visitorId,
       senderId: client.data.senderId,
     });
-    client.join(String(result.conversationId));
+    await client.join(String(result.conversationId));
     this.server.to(String(result.conversationId)).emit('message', result);
   }
 }

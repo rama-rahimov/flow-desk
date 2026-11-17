@@ -25,14 +25,12 @@ export class UsersService {
     companyId: number,
     data: EditProfileDto,
   ) {
-    const obj = { email: '' };
-    for (const idKey in data) {
-      if (
-        data.hasOwnProperty(idKey) &&
-        data[idKey] !== undefined &&
-        !!data[idKey]
-      ) {
-        obj[idKey] = data[idKey];
+    const obj: Partial<EditProfileDto> = { email: '' };
+    const dataRecord = data as unknown as Record<string, unknown>;
+    for (const key of Object.keys(dataRecord)) {
+      const value = dataRecord[key];
+      if (value !== undefined && Boolean(value)) {
+        (obj as Record<string, unknown>)[key] = value;
       }
     }
     if (obj.email && obj.email !== email) {
@@ -104,7 +102,7 @@ export class UsersService {
     console.log({ employeesJson, companyId: obj.user.company.id });
     if (employeesJson !== null) {
       console.log('all employees json');
-      return JSON.parse(employeesJson);
+      return JSON.parse(employeesJson) as UserEntity[];
     } else {
       const employeesCompany = await this.userDB.find({
         where: { company: { id: obj.user.company.id } },
